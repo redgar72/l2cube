@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf8">
+  <title>Rubik's Cube Tutorial</title>
+  <link rel="stylesheet" href="./index.css">
+  <!-- Note: the source file is `main.ts`, but here we use the transpiled file name it will have on the web server. -->
+  <script src="./main.js" type="module"></script>
+</head>
+
+<body>
+  <div class="tutorial-container">
+    <h1>Rubik's Cube Tutorial</h1>
+    
+    <!-- Main player section -->
+    <section class="main-player-section">
+      <h2>Solved Cube Reference</h2>
+      <p>This is your reference cube in solved state</p>
+      <twisty-player id="main-player"></twisty-player>
+    </section>
+
+    <!-- Cross tutorial section -->
+    <section class="cross-section">
+      <h2>White Cross Tutorial</h2>
+      <p>Learn to solve the white cross with white on bottom. Understand good vs bad edges!</p>
+      <p>We will also pick a consistent "y" orientation</p>
+      
+      <div class="cross-steps">
+        <div class="cross-step">
+          <h3>White Center on Bottom</h3>
+          <p>Always start with white center on the bottom face (D)</p>
+          <twisty-player id="cross-step-1"></twisty-player>
+        </div>
+        
+        <div class="cross-step">
+          <h3>Good Edge Example</h3>
+          <p>White sticker on bottom - ready to solve!</p>
+          <twisty-player id="cross-step-2" alg="" experimental-stickering="Cross"></twisty-player>
+        </div>
+        
+        <div class="cross-step">
+          <h3>Bad Edge Example</h3>
+          <p>White sticker on top - needs to be flipped</p>
+          <twisty-player id="cross-step-3" alg="" experimental-stickering="Daisy"></twisty-player>
+        </div>
+        
+        <div class="cross-step">
+          <h3>Solving Bad Edge</h3>
+          <p>F2 U' R U - flips the bad edge to good</p>
+          <twisty-player id="cross-step-4" alg="F2 U' R U" experimental-stickering="Cross"></twisty-player>
+        </div>
+        
+        <div class="cross-step">
+          <h3>Complete Cross</h3>
+          <p>All four edges solved with white on bottom</p>
+          <twisty-player id="cross-step-5" alg="" experimental-stickering="Cross"></twisty-player>
+        </div>
+      </div>
+    </section>
+  </div>
+</body>
+
+</html>
