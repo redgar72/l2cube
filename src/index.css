@@ -4,7 +4,7 @@ body {
   height: 100%;
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #b1b1b3 0%, #323232 100%);
   color: #333;
 }
 
@@ -13,6 +13,28 @@ body {
   margin: 0 auto;
   padding: 20px;
   min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.welcome-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+}
+
+.twisty-player {
+  width: 100%;
+  max-width: 500px;
+  height: 50vw;
+  max-height: 500px;
+  min-height: 300px;
+  margin: 0 auto;
+  display: block;
+  background: none;
 }
 
 /* Header */
@@ -37,145 +59,3 @@ h3 {
   margin-bottom: 0.5rem;
 }
 
-/* Main player section */
-.main-player-section {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 2rem;
-  margin-bottom: 2rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-  text-align: center;
-}
-
-.main-player-section p {
-  color: #666;
-  font-size: 1.1rem;
-  margin-bottom: 1rem;
-}
-
-#main-player {
-  width: 300px;
-  height: 300px;
-  margin: 0 auto;
-}
-
-/* Cross section */
-.cross-section {
-  background: rgba(255, 255, 255, 0.95);
-  border-radius: 15px;
-  padding: 2rem;
-  box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-}
-
-.cross-section p {
-  color: #666;
-  font-size: 1.1rem;
-  margin-bottom: 2rem;
-  text-align: center;
-}
-
-.cross-steps {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.cross-step {
-  background: #f8f9fa;
-  border-radius: 12px;
-  padding: 2rem;
-  text-align: center;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.2s, box-shadow 0.2s;
-  border-left: 4px solid #667eea;
-  min-height: 400px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-}
-
-.cross-step:hover {
-  transform: translateY(-5px);
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-}
-
-/* Good edge styling */
-.cross-step:nth-child(2) {
-  border-left-color: #28a745;
-  background: linear-gradient(135deg, #f8f9fa 0%, #d4edda 100%);
-}
-
-.cross-step:nth-child(2) h3 {
-  color: #28a745;
-}
-
-/* Bad edge styling */
-.cross-step:nth-child(3) {
-  border-left-color: #dc3545;
-  background: linear-gradient(135deg, #f8f9fa 0%, #f8d7da 100%);
-}
-
-.cross-step:nth-child(3) h3 {
-  color: #dc3545;
-}
-
-/* Algorithm step styling */
-.cross-step:nth-child(4) {
-  border-left-color: #ffc107;
-  background: linear-gradient(135deg, #f8f9fa 0%, #fff3cd 100%);
-}
-
-.cross-step:nth-child(4) h3 {
-  color: #856404;
-}
-
-.cross-step h3 {
-  color: #667eea;
-  margin-bottom: 0.5rem;
-}
-
-.cross-step p {
-  color: #666;
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-}
-
-.cross-step twisty-player {
-  width: 250px;
-  height: 250px;
-  margin: 0 auto;
-  display: block;
-  border: 2px solid red; /* Debug border to see if element exists */
-  background: rgba(255, 0, 0, 0.1); /* Debug background */
-}
-
-/* Responsive design */
-@media (max-width: 768px) {
-  .tutorial-container {
-    padding: 10px;
-  }
-  
-  h1 {
-    font-size: 2rem;
-  }
-  
-  h2 {
-    font-size: 1.5rem;
-  }
-  
-  .cross-steps {
-    grid-template-columns: 1fr;
-    gap: 1rem;
-  }
-  
-  #main-player {
-    width: 250px;
-    height: 250px;
-  }
-  
-  .cross-step twisty-player {
-    width: 200px;
-    height: 200px;
-  }
-}
