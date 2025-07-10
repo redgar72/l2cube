@@ -1,0 +1,16 @@
+# Jekyll configuration for GitHub Pages
+title: Rubik's Cube Tutorial
+description: Learn Rubik's Cube moves and solving techniques
+baseurl: "" # for GitHub Pages
+url: "" # for GitHub Pages
+
+# Jekyll settings
+markdown: kramdown
+highlighter: rouge
+# plugins:
+#   - jekyll-feed
+
+# Exclude files from processing
+exclude:
+  - README.md
+  - _config.yml 
