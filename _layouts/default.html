@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf8">
+  <title>{{ page.title | default: site.title }}</title>
+  <link rel="stylesheet" href="./index.css">
+  <script type="module" src="https://cdn.cubing.net/v0/js/cubing/twisty"></script>
+</head>
+
+<body>
+  <!-- Navigation Sidebar -->
+  <nav class="sidebar">
+    <div class="sidebar-header">
+      <h3>Navigation</h3>
+      <button class="sidebar-toggle" id="sidebar-toggle">☰</button>
+    </div>
+    <ul class="sidebar-menu" id="sidebar-menu">
+      <li><a href="#welcome" class="nav-link">Welcome</a></li>
+      <li><a href="#move-definitions" class="nav-link">Move Definitions</a></li>
+      <li class="nav-section">
+        <span class="nav-section-title">Move Breakdowns</span>
+        <ul class="nav-submenu">
+          <li><a href="#face-turns-breakdown" class="nav-link">Face Turns</a></li>
+          <li><a href="#wide-turns-breakdown" class="nav-link">Wide Turns</a></li>
+          <li><a href="#slice-turns-breakdown" class="nav-link">Slice Turns</a></li>
+          <li><a href="#rotations-breakdown" class="nav-link">Rotations</a></li>
+        </ul>
+      </li>
+      <li><a href="#cross" class="nav-link">Cross</a></li>
+      <li><a href="#f2l" class="nav-link">F2L</a></li>
+    </ul>
+  </nav>
+
+  <div class="main-content">
+    <div class="tutorial-container">
+      <h1>Rubik's Cube Tutorial</h1>
+      
+      <div id="sections-container">
+        {{ content }}
+      </div>
+    </div>
+  </div>
+
+  <script src="./components/CubeComponent.js"></script>
+  <script src="./static.js"></script>
+</body>
+
+</html> 
