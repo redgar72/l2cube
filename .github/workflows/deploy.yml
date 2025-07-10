@@ -38,6 +38,17 @@ jobs:
     - name: Build project
       run: npm run build
       
+    - name: Debug - List built files
+      run: |
+        echo "Contents of dist/web:"
+        ls -la dist/web/
+        echo "Contents of dist/web/sections:"
+        ls -la dist/web/sections/
+        echo "Contents of dist/web/components:"
+        ls -la dist/web/components/
+        echo "Testing file access:"
+        cat dist/web/index.html | head -5
+      
     - name: Setup Pages
       uses: actions/configure-pages@v4
       
@@ -45,6 +56,13 @@ jobs:
       uses: actions/upload-pages-artifact@v3
       with:
         path: './dist/web'
+        
+    - name: Debug - Verify artifact
+      run: |
+        echo "Artifact uploaded successfully"
+        echo "Path: ./dist/web"
+        echo "Files that should be deployed:"
+        find dist/web -type f -name "*.html" -o -name "*.css" -o -name "*.js" | head -10
         
     - name: Deploy to GitHub Pages
       id: deployment
