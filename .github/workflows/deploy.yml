@@ -54,6 +54,10 @@ jobs:
         cat dist/web/index.html | head -5
         echo "Verifying path exists:"
         test -d dist/web && echo "dist/web directory exists" || echo "dist/web directory does not exist"
+        echo "File permissions:"
+        ls -la dist/web/index.html
+        echo "Directory structure:"
+        find dist/web -type f -name "*.html" | head -5
       
     - name: Setup Pages
       uses: actions/configure-pages@v4
@@ -71,7 +75,19 @@ jobs:
         find dist/web -type f -name "*.html" -o -name "*.css" -o -name "*.js" | head -10
         echo "Total files in dist/web:"
         find dist/web -type f | wc -l
+        echo "Verifying index.html content:"
+        head -10 dist/web/index.html
+        echo "Checking if index.html exists and is readable:"
+        test -f dist/web/index.html && echo "index.html exists" || echo "index.html does not exist"
+        test -r dist/web/index.html && echo "index.html is readable" || echo "index.html is not readable"
         
     - name: Deploy to GitHub Pages
       id: deployment
-      uses: actions/deploy-pages@v4 
+      uses: actions/deploy-pages@v4
+      
+    - name: Debug - Deployment URL
+      run: |
+        echo "Deployment URL: ${{ steps.deployment.outputs.page_url }}"
+        echo "Repository: ${{ github.repository }}"
+        echo "Repository owner: ${{ github.repository_owner }}"
+        echo "Repository name: ${{ github.event.repository.name }}" 
