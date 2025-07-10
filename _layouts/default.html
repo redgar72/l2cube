@@ -34,7 +34,7 @@
 
   <div class="main-content">
     <div class="tutorial-container">
-      <h1>Rubik's Cube Tutorial</h1>
+      <h1>{{ page.title | default: site.title }}</h1>
       
       <div id="sections-container">
         {{ content }}
