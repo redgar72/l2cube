@@ -1,8 +1,224 @@
 <!-- Cross section -->
 <section class="cross">
   <h2>Cross</h2>
-  <p>Solving the white cross</p>
-  <div class="content">
-    <p>This section will contain cross-solving content.</p>
+  <p>Solving the white cross efficiently</p>
+  
+  <div class="cross-intro">
+    <p>The cross is the foundation of CFOP solving. A well-executed cross should be completed in 8 moves or fewer, typically without rotations. This section covers various cross techniques with a focus on rotationless methods.</p>
+  </div>
+
+  <!-- Cross Fundamentals -->
+  <div class="cross-fundamentals">
+    <h3>Cross Fundamentals</h3>
+    <p>Before diving into advanced techniques, understand these key principles:</p>
+    <ul>
+      <li><strong>Efficiency:</strong> Aim for 8 moves or fewer</li>
+      <li><strong>Rotationless:</strong> Avoid cube rotations during cross</li>
+      <li><strong>Planning:</strong> Plan your entire cross during inspection</li>
+      <li><strong>Color neutrality:</strong> Consider solving cross on any color</li>
+    </ul>
+  </div>
+
+  <!-- Basic Cross Techniques -->
+  <div class="cross-technique">
+    <h3>Basic Cross Technique</h3>
+    <p>Start with the simplest approach: solve one edge at a time.</p>
+    
+    <div class="technique-example">
+      <div class="cross-cases-grid">
+        <div class="cross-case-box">
+          <div class="cube-demo" id="basic-cross-right"></div>
+        </div>
+        <div class="cross-case-box">
+          <div class="cube-demo" id="basic-cross-left"></div>
+        </div>
+        <div class="cross-case-box">
+          <div class="cube-demo" id="basic-cross-front"></div>
+        </div>
+        <div class="cross-case-box">
+          <div class="cube-demo" id="basic-cross-back"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Daisy Method -->
+  <div class="cross-technique">
+    <h3>Daisy Method</h3>
+    <p>A beginner-friendly approach that creates a "daisy" pattern first, then converts it to a cross.</p>
+    
+    <div class="technique-steps">
+      <h4>Step 1: Create the Daisy</h4>
+      <p>Move all white edges to the top layer with white facing up, forming a daisy pattern.</p>
+      <div class="cube-demo" id="daisy-step1"></div>
+      
+      <h4>Step 2: Convert to Cross</h4>
+      <p>For each edge, align it with its center and do F2 to insert it.</p>
+      <div class="cube-demo" id="daisy-step2"></div>
+    </div>
+  </div>
+
+  <!-- Advanced Cross Techniques -->
+  <div class="cross-technique">
+    <h3>Advanced Cross Techniques</h3>
+    
+    <!-- Cross + 1 -->
+    <div class="technique-subsection">
+      <h4>Cross + 1</h4>
+      <p>Solve the cross and one corner simultaneously. This is a key skill for advanced solvers.</p>
+      <div class="example-cases">
+        <div class="case">
+          <h5>Case 1: Corner in UFR</h5>
+          <p>When white corner is in UFR with white on top:</p>
+          <p>R U R' (cross edge) + U R U' R' (corner)</p>
+          <div class="cube-demo" id="cross-plus-1-case1"></div>
+        </div>
+        
+        <div class="case">
+          <h5>Case 2: Corner in UFL</h5>
+          <p>When white corner is in UFL with white on top:</p>
+          <p>L' U' L (cross edge) + U' L' U L (corner)</p>
+          <div class="cube-demo" id="cross-plus-1-case2"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- X-Cross -->
+    <div class="technique-subsection">
+      <h4>X-Cross</h4>
+      <p>Solve the cross and the first F2L pair simultaneously. This is an advanced technique that can save significant time.</p>
+      <div class="example-cases">
+        <div class="case">
+          <h5>X-Cross Example</h5>
+          <p>Cross: R U R' F' U F</p>
+          <p>F2L Pair: U R U' R'</p>
+          <p>Total: R U R' F' U F U R U' R'</p>
+          <div class="cube-demo" id="x-cross-example"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross Planning -->
+  <div class="cross-technique">
+    <h3>Cross Planning</h3>
+    <p>Advanced solvers plan their entire cross during the 15-second inspection time.</p>
+    
+    <div class="planning-tips">
+      <h4>Planning Tips</h4>
+      <ul>
+        <li><strong>Start with the hardest edge:</strong> Look for edges that require the most moves</li>
+        <li><strong>Consider move cancellations:</strong> Plan moves that can cancel with each other</li>
+        <li><strong>Look for pairs:</strong> Some edges can be solved together efficiently</li>
+        <li><strong>Practice with a timer:</strong> Use inspection time effectively</li>
+      </ul>
+    </div>
+
+    <div class="planning-example">
+      <h4>Planning Example</h4>
+      <p>Given this scramble: R U R' F' U F U R U' R'</p>
+      <p>Planned solution: R U R' F' U F (6 moves)</p>
+      <div class="cube-demo" id="planning-example"></div>
+    </div>
+  </div>
+
+  <!-- Color Neutral Cross -->
+  <div class="cross-technique">
+    <h3>Color Neutral Cross</h3>
+    <p>Solving the cross on any color can give you better starting positions.</p>
+    
+    <div class="color-neutral-benefits">
+      <h4>Benefits of Color Neutrality</h4>
+      <ul>
+        <li><strong>Better crosses:</strong> Some colors naturally have easier crosses</li>
+        <li><strong>More options:</strong> Choose the best starting position</li>
+        <li><strong>Reduced rotations:</strong> Avoid cube rotations more easily</li>
+      </ul>
+    </div>
+
+    <div class="color-examples">
+      <div class="color-example">
+        <h4>White Cross</h4>
+        <p>Traditional approach, good for beginners</p>
+        <div class="cube-demo" id="white-cross"></div>
+      </div>
+      
+      <div class="color-example">
+        <h4>Yellow Cross</h4>
+        <p>Alternative approach, can be more efficient</p>
+        <div class="cube-demo" id="yellow-cross"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Common Cross Patterns -->
+  <div class="cross-technique">
+    <h3>Common Cross Patterns</h3>
+    <p>Recognize these common patterns for faster cross solving:</p>
+    
+    <div class="cross-patterns">
+      <div class="pattern">
+        <h4>Line Pattern</h4>
+        <p>Two edges form a line on the top face</p>
+        <p>Solution: F R U R' U' F'</p>
+        <div class="cube-demo" id="line-pattern"></div>
+      </div>
+      
+      <div class="pattern">
+        <h4>L-Pattern</h4>
+        <p>Two edges form an L-shape on the top face</p>
+        <p>Solution: F U R U' R' F'</p>
+        <div class="cube-demo" id="l-pattern"></div>
+      </div>
+      
+      <div class="pattern">
+        <h4>Dot Pattern</h4>
+        <p>No edges are solved on the top face</p>
+        <p>Solution: F R U R' U' F' U2 F R U R' U' F'</p>
+        <div class="cube-demo" id="dot-pattern"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Practice Scrambles -->
+  <div class="cross-technique">
+    <h3>Practice Scrambles</h3>
+    <p>Practice these scrambles to improve your cross solving:</p>
+    
+    <div class="practice-scrambles">
+      <div class="scramble">
+        <h4>Easy Cross (4-6 moves)</h4>
+        <p>Scramble: R U R' F' U F</p>
+        <p>Solution: R U R' F' U F</p>
+        <div class="cube-demo" id="easy-scramble"></div>
+      </div>
+      
+      <div class="scramble">
+        <h4>Medium Cross (6-8 moves)</h4>
+        <p>Scramble: R U R' F' U F U R U' R'</p>
+        <p>Solution: R U R' F' U F</p>
+        <div class="cube-demo" id="medium-scramble"></div>
+      </div>
+      
+      <div class="scramble">
+        <h4>Hard Cross (8+ moves)</h4>
+        <p>Scramble: R U R' F' U F U R U' R' F U F'</p>
+        <p>Solution: R U R' F' U F U R U' R'</p>
+        <div class="cube-demo" id="hard-scramble"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cross Tips -->
+  <div class="cross-tips">
+    <h3>Cross Solving Tips</h3>
+    <ul>
+      <li><strong>Practice inspection:</strong> Use the full 15 seconds to plan your cross</li>
+      <li><strong>Look ahead:</strong> While solving the cross, look for your first F2L pair</li>
+      <li><strong>Finger tricks:</strong> Learn efficient finger tricks for cross moves</li>
+      <li><strong>Color neutrality:</strong> Consider learning to solve on multiple colors</li>
+      <li><strong>Cross + 1:</strong> Practice solving cross and one corner together</li>
+      <li><strong>X-cross:</strong> Advanced technique to solve cross and first F2L pair</li>
+    </ul>
   </div>
 </section> 

@@ -10,17 +10,14 @@ class CubeComponent {
       setupAlg: options.setupAlg || '',
       clickable: options.clickable !== false,
       onClick: options.onClick || null,
-      expandable: options.expandable !== false,
-      expandedMoves: options.expandedMoves || [],
-      onExpand: options.onExpand || null,
-      onCollapse: options.onCollapse || null,
+      cumulative: options.cumulative !== false,
+      mask: options.mask || '',
       ...options
     };
     
     this.currentMoveIndex = 0;
     this.animationInterval = null;
     this.isAnimating = false;
-    this.isExpanded = false;
     
     this.init();
   }
@@ -32,79 +29,39 @@ class CubeComponent {
   
   render() {
     const clickableClass = this.options.clickable ? 'clickable' : '';
-    const expandedClass = this.isExpanded ? 'expanded' : '';
     
-    if (this.isExpanded && this.options.expandedMoves.length > 0) {
-      // Render expanded view with multiple cubes in the same row
-      this.container.innerHTML = `
-        <div class="cube-component ${clickableClass} ${expandedClass}">
-          <h3>${this.options.title}</h3>
-          <div class="expanded-cubes">
-            ${this.options.expandedMoves.map((move, index) => `
-              <div class="expanded-cube-item">
-                <div class="move-display">
-                  <span class="move-symbol">${move}</span>
-                </div>
-                <twisty-player
-                  class="cube-3d"
-                  control-panel="none"
-                  background="none"
-                  alg="${move}"
-                  experimental-setup-alg="${this.options.setupAlg}"
-                ></twisty-player>
-              </div>
-            `).join('')}
+    // Render normal view
+    this.container.innerHTML = `
+      <div class="cube-component ${clickableClass}">
+        <h3>${this.options.title}</h3>
+        ${this.options.showMoveDisplay ? `
+          <div class="move-display">
+            <span class="move-symbol">${this.options.moves[0] || ''}</span>
           </div>
-          <button class="collapse-btn" onclick="this.closest('.cube-component').__component.collapse()">×</button>
-        </div>
-      `;
-      
-      // Add click handler for expanded view to play all moves simultaneously
-      const expandedComponent = this.container.querySelector('.cube-component');
-      if (expandedComponent) {
-        expandedComponent.addEventListener('click', (e) => {
-          if (e.target.closest('.collapse-btn')) return; // Don't trigger on collapse button
-          this.playAllExpandedMoves();
-        });
-        
-        // Make the expanded cubes non-interactive by preventing their click events
-        const expandedCubes = expandedComponent.querySelectorAll('.expanded-cube-item');
-        expandedCubes.forEach(cube => {
-          cube.style.pointerEvents = 'none';
-        });
-      }
-    } else {
-      // Render normal view
-      this.container.innerHTML = `
-        <div class="cube-component ${clickableClass} ${expandedClass}">
-          <h3>${this.options.title}</h3>
-          ${this.options.showMoveDisplay ? `
-            <div class="move-display">
-              <span class="move-symbol">${this.options.moves[0] || ''}</span>
-            </div>
-          ` : ''}
-          <div class="cube-container">
+        ` : ''}
+        <div class="cube-container">
+          <twisty-player
+            class="cube-3d"
+            control-panel="none"
+            background="none"
+            alg="${this.options.moves[0] || ''}"
+            experimental-setup-alg="${this.options.setupAlg}"
+            ${this.options.mask ? `experimental-stickering-mask-orbits="${this.options.mask}"` : ''}
+          ></twisty-player>
+          ${this.options.show2D ? `
             <twisty-player
-              class="cube-3d"
+              class="cube-2d"
               control-panel="none"
               background="none"
               alg="${this.options.moves[0] || ''}"
+              visualization="2D"
               experimental-setup-alg="${this.options.setupAlg}"
+              ${this.options.mask ? `experimental-stickering-mask-orbits="${this.options.mask}"` : ''}
             ></twisty-player>
-            ${this.options.show2D ? `
-              <twisty-player
-                class="cube-2d"
-                control-panel="none"
-                background="none"
-                alg="${this.options.moves[0] || ''}"
-                visualization="2D"
-                experimental-setup-alg="${this.options.setupAlg}"
-              ></twisty-player>
-            ` : ''}
-          </div>
+          ` : ''}
         </div>
-      `;
-    }
+      </div>
+    `;
     
     // Store component reference for collapse button
     const cubeComponent = this.container.querySelector('.cube-component');
@@ -121,15 +78,11 @@ class CubeComponent {
   
   setupEventListeners() {
     this.container.addEventListener('mouseenter', () => {
-      if (!this.isExpanded) {
-        this.startAnimation();
-      }
+      this.startAnimation();
     });
     
     this.container.addEventListener('mouseleave', () => {
-      if (!this.isExpanded) {
-        this.stopAnimation();
-      }
+      this.stopAnimation();
     });
     
     if (this.options.clickable && this.options.onClick) {
@@ -139,35 +92,19 @@ class CubeComponent {
       });
     }
     
-    if (this.options.expandable && this.options.onExpand) {
-      this.container.addEventListener('click', (e) => {
+    // Add click handler for move symbols
+    this.container.addEventListener('click', (e) => {
+      if (e.target.classList.contains('move-symbol')) {
         e.preventDefault();
-        this.expand();
-      });
-    }
+        e.stopPropagation();
+        const move = e.target.textContent;
+        const type = window.getMoveType(move);
+        window.showMoveDefinitionModal(move, type);
+      }
+    });
   }
   
-  expand() {
-    if (this.options.onExpand) {
-      this.options.onExpand(this);
-    }
-  }
-  
-  collapse() {
-    this.isExpanded = false;
-    this.render();
-    this.setupEventListeners();
-    if (this.options.onCollapse) {
-      this.options.onCollapse(this);
-    }
-  }
-  
-  setExpandedMoves(moves) {
-    this.options.expandedMoves = moves;
-    this.isExpanded = true;
-    this.render();
-    this.setupEventListeners();
-  }
+
   
   hide() {
     this.container.style.display = 'none';
@@ -209,14 +146,31 @@ class CubeComponent {
       this.moveSymbol.textContent = currentMove;
     }
     
-    if (this.cube3D) {
-      this.cube3D.alg = currentMove;
-      this.cube3D.play();
-    }
-    
-    if (this.cube2D) {
-      this.cube2D.alg = currentMove;
-      this.cube2D.play();
+    if (this.options.cumulative) {
+      // Build up the algorithm progressively
+      const movesSoFar = this.options.moves.slice(0, this.currentMoveIndex + 1);
+      const cumulativeAlg = movesSoFar.join(' ');
+      
+      if (this.cube3D) {
+        this.cube3D.alg = cumulativeAlg;
+        this.cube3D.play();
+      }
+      
+      if (this.cube2D) {
+        this.cube2D.alg = cumulativeAlg;
+        this.cube2D.play();
+      }
+    } else {
+      // Play individual moves
+      if (this.cube3D) {
+        this.cube3D.alg = currentMove;
+        this.cube3D.play();
+      }
+      
+      if (this.cube2D) {
+        this.cube2D.alg = currentMove;
+        this.cube2D.play();
+      }
     }
   }
   
@@ -239,26 +193,7 @@ class CubeComponent {
     this.container.innerHTML = '';
   }
 
-  playAllExpandedMoves() {
-    if (!this.isExpanded || !this.options.expandedMoves.length) return;
-    
-    const cubes = this.container.querySelectorAll('.expanded-cube-item .cube-3d');
-    const moveSymbols = this.container.querySelectorAll('.expanded-cube-item .move-symbol');
-    
-    cubes.forEach((cube, index) => {
-      const move = this.options.expandedMoves[index];
-      if (cube && move) {
-        cube.alg = move;
-        cube.play();
-      }
-    });
-    
-    // Update move symbols if needed
-    moveSymbols.forEach((symbol, index) => {
-      const move = this.options.expandedMoves[index];
-      if (symbol && move) {
-        symbol.textContent = move;
-      }
-    });
-  }
+
+  
+
 } 
