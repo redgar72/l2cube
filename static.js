@@ -25,6 +25,140 @@ const CUBE_MASKS = {
   NONE: ""
 };
 
+// Move type configurations for easier management
+const MOVE_CONFIGS = {
+  face: {
+    moves: ['R', 'U', 'F', 'L', 'D', 'B'],
+    containerPrefix: '',
+    titleSuffix: ' Move',
+    defaultInterval: 3000
+  },
+  wide: {
+    moves: ['r', 'u', 'f', 'l', 'd', 'b'],
+    containerPrefix: '-wide',
+    titleSuffix: ' Move',
+    defaultInterval: 3000
+  },
+  slice: {
+    moves: ['M', 'E', 'S'],
+    containerPrefix: '-slice',
+    titleSuffix: ' Move',
+    defaultInterval: 3000
+  },
+  rotation: {
+    moves: ['x', 'y', 'z'],
+    containerPrefix: '-rotation',
+    titleSuffix: ' Rotation',
+    defaultInterval: 3000
+  }
+};
+
+// Move definitions data structure
+const MOVE_DEFINITIONS = {
+  // Face turns
+  R: { title: 'Right Face Turn', description: 'Turns the right face of the cube clockwise.', direction: 'Clockwise', layer: 'Right face', angle: '90°' },
+  U: { title: 'Up Face Turn', description: 'Turns the upper face of the cube clockwise.', direction: 'Clockwise', layer: 'Upper face', angle: '90°' },
+  F: { title: 'Front Face Turn', description: 'Turns the front face of the cube clockwise.', direction: 'Clockwise', layer: 'Front face', angle: '90°' },
+  L: { title: 'Left Face Turn', description: 'Turns the left face of the cube clockwise.', direction: 'Clockwise', layer: 'Left face', angle: '90°' },
+  D: { title: 'Down Face Turn', description: 'Turns the bottom face of the cube clockwise.', direction: 'Clockwise', layer: 'Bottom face', angle: '90°' },
+  B: { title: 'Back Face Turn', description: 'Turns the back face of the cube clockwise.', direction: 'Clockwise', layer: 'Back face', angle: '90°' },
+  
+  // Wide turns
+  r: { title: 'Right Wide Turn', description: 'Turns the right face and the middle layer together.', direction: 'Clockwise', layer: 'Right face + middle layer', angle: '90°' },
+  u: { title: 'Up Wide Turn', description: 'Turns the upper face and the middle layer together.', direction: 'Clockwise', layer: 'Upper face + middle layer', angle: '90°' },
+  f: { title: 'Front Wide Turn', description: 'Turns the front face and the middle layer together.', direction: 'Clockwise', layer: 'Front face + middle layer', angle: '90°' },
+  l: { title: 'Left Wide Turn', description: 'Turns the left face and the middle layer together.', direction: 'Clockwise', layer: 'Left face + middle layer', angle: '90°' },
+  d: { title: 'Down Wide Turn', description: 'Turns the bottom face and the middle layer together.', direction: 'Clockwise', layer: 'Bottom face + middle layer', angle: '90°' },
+  b: { title: 'Back Wide Turn', description: 'Turns the back face and the middle layer together.', direction: 'Clockwise', layer: 'Back face + middle layer', angle: '90°' },
+  
+  // Slice turns
+  M: { title: 'Middle Slice Turn', description: 'Turns the middle layer between left and right faces.', direction: 'Clockwise', layer: 'Middle slice', angle: '90°' },
+  E: { title: 'Equatorial Slice Turn', description: 'Turns the middle layer between up and down faces.', direction: 'Clockwise', layer: 'Equatorial slice', angle: '90°' },
+  S: { title: 'Standing Slice Turn', description: 'Turns the middle layer between front and back faces.', direction: 'Clockwise', layer: 'Standing slice', angle: '90°' },
+  
+  // Rotations
+  x: { title: 'X Rotation', description: 'Rotates the entire cube around the X-axis (left-right).', direction: 'Clockwise', layer: 'Entire cube', angle: '90°' },
+  y: { title: 'Y Rotation', description: 'Rotates the entire cube around the Y-axis (up-down).', direction: 'Clockwise', layer: 'Entire cube', angle: '90°' },
+  z: { title: 'Z Rotation', description: 'Rotates the entire cube around the Z-axis (front-back).', direction: 'Clockwise', layer: 'Entire cube', angle: '90°' }
+};
+
+// Helper function to create CubeComponent with default settings
+function createCubeComponent(containerId, options = {}) {
+  const container = document.getElementById(containerId);
+  if (!container) return null;
+  
+  const defaultOptions = {
+    show2D: false,
+    showMoveDisplay: true,
+    interval: 3000,
+    setupAlg: "x2",
+    cumulative: false,
+    mask: CUBE_MASKS.NONE
+  };
+  
+  return new CubeComponent(container, { ...defaultOptions, ...options });
+}
+
+// Helper function to create multiple CubeComponents from a configuration
+function createCubeComponentsFromConfig(configs) {
+  return configs.map(config => {
+    const { id, ...options } = config;
+    return createCubeComponent(id, options);
+  }).filter(Boolean);
+}
+
+// Helper function to get move type from move string
+function getMoveType(move) {
+  const baseMove = move.replace(/['2]/g, '');
+  const isPrime = move.includes("'");
+  const isDouble = move.includes("2");
+  
+  if (baseMove.match(/[RUFDLB]/)) {
+    return isPrime ? 'face-prime' : isDouble ? 'face-double' : 'face';
+  } else if (baseMove.match(/[rufdlb]/)) {
+    return isPrime ? 'wide-prime' : isDouble ? 'wide-double' : 'wide';
+  } else if (baseMove.match(/[MES]/)) {
+    return isPrime ? 'slice-prime' : isDouble ? 'slice-double' : 'slice';
+  } else if (baseMove.match(/[xyz]/)) {
+    return isPrime ? 'rotation-prime' : isDouble ? 'rotation-double' : 'rotation';
+  }
+  return 'face';
+}
+
+// Helper function to get move definition with modifiers
+function getMoveDefinition(move, type) {
+  const baseMove = move.replace(/['2]/g, '');
+  const isPrime = move.includes("'");
+  const isDouble = move.includes("2");
+  
+  let definition = MOVE_DEFINITIONS[baseMove.toUpperCase()] || MOVE_DEFINITIONS[baseMove] || {
+    title: `${move} Move`,
+    description: `Definition for ${move} move.`,
+    direction: 'Unknown',
+    layer: 'Unknown',
+    angle: 'Unknown'
+  };
+  
+  // Apply modifiers for prime and double moves
+  if (isPrime) {
+    definition = {
+      ...definition,
+      title: definition.title.replace('Turn', 'Turn (Prime)'),
+      description: definition.description.replace('clockwise', 'counter-clockwise'),
+      direction: 'Counter-clockwise'
+    };
+  } else if (isDouble) {
+    definition = {
+      ...definition,
+      title: definition.title.replace('Turn', 'Turn (Double)'),
+      description: definition.description.replace('clockwise', '180 degrees'),
+      angle: '180°'
+    };
+  }
+  
+  return definition;
+}
+
 window.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing components...");
   
@@ -110,77 +244,52 @@ function initializeNavigation() {
 
 function initializeCubeComponents() {
   // Welcome section - random moves with both 3D and 2D
-  const welcomeContainer = document.getElementById("welcome-cube-container");
-  if (welcomeContainer) {
-    new CubeComponent(welcomeContainer, {
-      title: "3D & 2D View",
-      show2D: true,
-      showMoveDisplay: true,
-      moves: ["R", "U", "F", "L", "D", "B", "R'", "U'", "F'", "L'", "D'", "B'"],
-      interval: 1500,
-      setupAlg: "x2"
-    });
-  }
+  createCubeComponent("welcome-cube-container", {
+    title: "3D & 2D View",
+    show2D: true,
+    showMoveDisplay: true,
+    moves: ["R", "U", "F", "L", "D", "B", "R'", "U'", "F'", "L'", "D'", "B'"],
+    interval: 1500,
+    setupAlg: "x2"
+  });
 
-  // Face turns - clickable to scroll to breakdown
-  const faceTurnsContainer = document.getElementById("face-turns-container");
-  if (faceTurnsContainer) {
-    new CubeComponent(faceTurnsContainer, {
+  // Main move type demonstrations - clickable to scroll to breakdown
+  const mainMoveConfigs = [
+    {
+      id: "face-turns-container",
       title: "Face Turns",
-      show2D: false,
-      showMoveDisplay: true,
       moves: ["R", "U", "F", "L", "D", "B"],
       interval: 2000,
-      setupAlg: "x2",
       clickable: true,
       onClick: () => scrollToSection('face-turns-breakdown')
-    });
-  }
-
-  // Wide turns - clickable to scroll to breakdown
-  const wideTurnsContainer = document.getElementById("wide-turns-container");
-  if (wideTurnsContainer) {
-    new CubeComponent(wideTurnsContainer, {
+    },
+    {
+      id: "wide-turns-container", 
       title: "Wide Turns",
-      show2D: false,
-      showMoveDisplay: true,
       moves: ["r", "u", "f", "l", "d", "b"],
       interval: 2000,
-      setupAlg: "x2",
       clickable: true,
       onClick: () => scrollToSection('wide-turns-breakdown')
-    });
-  }
-
-  // Slice turns - clickable to scroll to breakdown
-  const sliceTurnsContainer = document.getElementById("slice-turns-container");
-  if (sliceTurnsContainer) {
-    new CubeComponent(sliceTurnsContainer, {
-      title: "Slice Turns",
-      show2D: false,
-      showMoveDisplay: true,
+    },
+    {
+      id: "slice-turns-container",
+      title: "Slice Turns", 
       moves: ["M", "E", "S"],
       interval: 2000,
-      setupAlg: "x2",
       clickable: true,
       onClick: () => scrollToSection('slice-turns-breakdown')
-    });
-  }
-
-  // Rotations - clickable to scroll to breakdown
-  const rotationsContainer = document.getElementById("rotations-container");
-  if (rotationsContainer) {
-    new CubeComponent(rotationsContainer, {
+    },
+    {
+      id: "rotations-container",
       title: "Rotations",
-      show2D: false,
-      showMoveDisplay: true,
-      moves: ["x", "y", "z"],
+      moves: ["x", "y", "z"], 
       interval: 2000,
-      setupAlg: "x2",
       clickable: true,
       onClick: () => scrollToSection('rotations-breakdown')
-    });
-  }
+    }
+  ];
+
+  createCubeComponentsFromConfig(mainMoveConfigs);
 
   // Initialize individual move components in breakdown sections
   initializeBreakdownComponents();
@@ -192,33 +301,20 @@ function initializeCubeComponents() {
 function initializeBreakdownComponents() {
   // Face turns breakdown - individual moves
   const faceMoves = [
-    { id: 'r-move-container', move: 'R', title: 'R Move', row: 'row-1' },
-    { id: 'u-move-container', move: 'U', title: 'U Move', row: 'row-1' },
-    { id: 'f-move-container', move: 'F', title: 'F Move', row: 'row-1' },
-    { id: 'l-move-container', move: 'L', title: 'L Move', row: 'row-2' },
-    { id: 'd-move-container', move: 'D', title: 'D Move', row: 'row-2' },
-    { id: 'b-move-container', move: 'B', title: 'B Move', row: 'row-2' }
+    { id: 'r-move-container', move: 'R', title: 'R Move' },
+    { id: 'u-move-container', move: 'U', title: 'U Move' },
+    { id: 'f-move-container', move: 'F', title: 'F Move' },
+    { id: 'l-move-container', move: 'L', title: 'L Move' },
+    { id: 'd-move-container', move: 'D', title: 'D Move' },
+    { id: 'b-move-container', move: 'B', title: 'B Move' }
   ];
 
-  const faceComponents = [];
-  const rowComponents = { 'row-1': [], 'row-2': [] };
-
-  faceMoves.forEach(({ id, move, title, row }) => {
-    const container = document.getElementById(id);
-    if (container) {
-      const component = new CubeComponent(container, {
-        title: title,
-        show2D: false,
-        showMoveDisplay: true,
-        moves: [move],
-        interval: 3000,
-        setupAlg: "x2"
-      });
-      
-      faceComponents.push(component);
-      rowComponents[row].push(component);
-    }
-  });
+  createCubeComponentsFromConfig(faceMoves.map(({ id, move, title }) => ({
+    id,
+    title,
+    moves: [move],
+    interval: 3000
+  })));
 
   // Wide turns breakdown - individual moves
   const wideMoves = [
@@ -230,19 +326,12 @@ function initializeBreakdownComponents() {
     { id: 'b-wide-container', move: 'b', title: 'b Move' }
   ];
 
-  wideMoves.forEach(({ id, move, title }) => {
-    const container = document.getElementById(id);
-    if (container) {
-      new CubeComponent(container, {
-        title: title,
-        show2D: false,
-        showMoveDisplay: true,
-        moves: [move],
-        interval: 3000,
-        setupAlg: "x2"
-      });
-    }
-  });
+  createCubeComponentsFromConfig(wideMoves.map(({ id, move, title }) => ({
+    id,
+    title,
+    moves: [move],
+    interval: 3000
+  })));
 
   // Slice turns breakdown - individual moves
   const sliceMoves = [
@@ -251,19 +340,12 @@ function initializeBreakdownComponents() {
     { id: 's-slice-container', move: 'S', title: 'S Move' }
   ];
 
-  sliceMoves.forEach(({ id, move, title }) => {
-    const container = document.getElementById(id);
-    if (container) {
-      new CubeComponent(container, {
-        title: title,
-        show2D: false,
-        showMoveDisplay: true,
-        moves: [move],
-        interval: 3000,
-        setupAlg: "x2"
-      });
-    }
-  });
+  createCubeComponentsFromConfig(sliceMoves.map(({ id, move, title }) => ({
+    id,
+    title,
+    moves: [move],
+    interval: 3000
+  })));
 
   // Rotations breakdown - individual moves
   const rotationMoves = [
@@ -272,43 +354,16 @@ function initializeBreakdownComponents() {
     { id: 'z-rotation-container', move: 'z', title: 'z Rotation' }
   ];
 
-  rotationMoves.forEach(({ id, move, title }) => {
-    const container = document.getElementById(id);
-    if (container) {
-      new CubeComponent(container, {
-        title: title,
-        show2D: false,
-        showMoveDisplay: true,
-        moves: [move],
-        interval: 3000,
-        setupAlg: "x2"
-      });
-    }
-  });
+  createCubeComponentsFromConfig(rotationMoves.map(({ id, move, title }) => ({
+    id,
+    title,
+    moves: [move],
+    interval: 3000
+  })));
 } 
 
 // Utility function to convert move notation to clickable buttons
 function initializeMoveButtons() {
-  // Define move patterns to look for
-  const movePatterns = [
-    // Face turns
-    { pattern: /(?<!\w)([RUFDLB]')(?!\w)/g, type: 'face-prime' },
-    { pattern: /(?<!\w)([RUFDLB]2)(?!\w)/g, type: 'face-double' },
-    { pattern: /(?<!\w)([RUFDLB])(?!\w)/g, type: 'face' },
-    // Wide turns
-    { pattern: /(?<!\w)([rufdlb]')(?!\w)/g, type: 'wide-prime' },
-    { pattern: /(?<!\w)([rufdlb]2)(?!\w)/g, type: 'wide-double' },
-    { pattern: /(?<!\w)([rufdlb])(?!\w)/g, type: 'wide' },
-    // Slice turns
-    { pattern: /(?<!\w)([MES]')(?!\w)/g, type: 'slice-prime' },
-    { pattern: /(?<!\w)([MES]2)(?!\w)/g, type: 'slice-double' },
-    { pattern: /(?<!\w)([MES])(?!\w)/g, type: 'slice' },
-    // Rotations
-    { pattern: /(?<!\w)([xyz]')(?!\w)/g, type: 'rotation-prime' },
-    { pattern: /(?<!\w)([xyz]2)(?!\w)/g, type: 'rotation-double' },
-    { pattern: /(?<!\w)([xyz])(?!\w)/g, type: 'rotation' }
-  ];
-
   // Find all text content that might contain move notation
   const textElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, div:not(.cube-component):not(.modal-overlay)');
   
@@ -463,172 +518,6 @@ function showMoveDefinitionModal(move, type) {
   document.body.style.overflow = 'hidden';
 }
 
-function getMoveDefinition(move, type) {
-  const baseMove = move.replace(/['2]/g, '');
-  const isPrime = move.includes("'");
-  const isDouble = move.includes("2");
-  
-  const moveDefinitions = {
-    // Face turns
-    'R': {
-      title: 'Right Face Turn',
-      description: 'Turns the right face of the cube clockwise.',
-      direction: 'Clockwise',
-      layer: 'Right face',
-      angle: '90°'
-    },
-    'U': {
-      title: 'Up Face Turn',
-      description: 'Turns the upper face of the cube clockwise.',
-      direction: 'Clockwise',
-      layer: 'Upper face',
-      angle: '90°'
-    },
-    'F': {
-      title: 'Front Face Turn',
-      description: 'Turns the front face of the cube clockwise.',
-      direction: 'Clockwise',
-      layer: 'Front face',
-      angle: '90°'
-    },
-    'L': {
-      title: 'Left Face Turn',
-      description: 'Turns the left face of the cube clockwise.',
-      direction: 'Clockwise',
-      layer: 'Left face',
-      angle: '90°'
-    },
-    'D': {
-      title: 'Down Face Turn',
-      description: 'Turns the bottom face of the cube clockwise.',
-      direction: 'Clockwise',
-      layer: 'Bottom face',
-      angle: '90°'
-    },
-    'B': {
-      title: 'Back Face Turn',
-      description: 'Turns the back face of the cube clockwise.',
-      direction: 'Clockwise',
-      layer: 'Back face',
-      angle: '90°'
-    },
-    // Wide turns
-    'r': {
-      title: 'Right Wide Turn',
-      description: 'Turns the right face and the middle layer together.',
-      direction: 'Clockwise',
-      layer: 'Right face + middle layer',
-      angle: '90°'
-    },
-    'u': {
-      title: 'Up Wide Turn',
-      description: 'Turns the upper face and the middle layer together.',
-      direction: 'Clockwise',
-      layer: 'Upper face + middle layer',
-      angle: '90°'
-    },
-    'f': {
-      title: 'Front Wide Turn',
-      description: 'Turns the front face and the middle layer together.',
-      direction: 'Clockwise',
-      layer: 'Front face + middle layer',
-      angle: '90°'
-    },
-    'l': {
-      title: 'Left Wide Turn',
-      description: 'Turns the left face and the middle layer together.',
-      direction: 'Clockwise',
-      layer: 'Left face + middle layer',
-      angle: '90°'
-    },
-    'd': {
-      title: 'Down Wide Turn',
-      description: 'Turns the bottom face and the middle layer together.',
-      direction: 'Clockwise',
-      layer: 'Bottom face + middle layer',
-      angle: '90°'
-    },
-    'b': {
-      title: 'Back Wide Turn',
-      description: 'Turns the back face and the middle layer together.',
-      direction: 'Clockwise',
-      layer: 'Back face + middle layer',
-      angle: '90°'
-    },
-    // Slice turns
-    'M': {
-      title: 'Middle Slice Turn',
-      description: 'Turns the middle layer between left and right faces.',
-      direction: 'Clockwise',
-      layer: 'Middle slice',
-      angle: '90°'
-    },
-    'E': {
-      title: 'Equatorial Slice Turn',
-      description: 'Turns the middle layer between up and down faces.',
-      direction: 'Clockwise',
-      layer: 'Equatorial slice',
-      angle: '90°'
-    },
-    'S': {
-      title: 'Standing Slice Turn',
-      description: 'Turns the middle layer between front and back faces.',
-      direction: 'Clockwise',
-      layer: 'Standing slice',
-      angle: '90°'
-    },
-    // Rotations
-    'x': {
-      title: 'X Rotation',
-      description: 'Rotates the entire cube around the X-axis (left-right).',
-      direction: 'Clockwise',
-      layer: 'Entire cube',
-      angle: '90°'
-    },
-    'y': {
-      title: 'Y Rotation',
-      description: 'Rotates the entire cube around the Y-axis (up-down).',
-      direction: 'Clockwise',
-      layer: 'Entire cube',
-      angle: '90°'
-    },
-    'z': {
-      title: 'Z Rotation',
-      description: 'Rotates the entire cube around the Z-axis (front-back).',
-      direction: 'Clockwise',
-      layer: 'Entire cube',
-      angle: '90°'
-    }
-  };
-  
-  let definition = moveDefinitions[baseMove.toUpperCase()] || moveDefinitions[baseMove] || {
-    title: `${move} Move`,
-    description: `Definition for ${move} move.`,
-    direction: 'Unknown',
-    layer: 'Unknown',
-    angle: 'Unknown'
-  };
-  
-  // Modify for prime and double moves
-  if (isPrime) {
-    definition = {
-      ...definition,
-      title: definition.title.replace('Turn', 'Turn (Prime)'),
-      description: definition.description.replace('clockwise', 'counter-clockwise'),
-      direction: 'Counter-clockwise'
-    };
-  } else if (isDouble) {
-    definition = {
-      ...definition,
-      title: definition.title.replace('Turn', 'Turn (Double)'),
-      description: definition.description.replace('clockwise', '180 degrees'),
-      angle: '180°'
-    };
-  }
-  
-  return definition;
-}
-
 // Make functions globally accessible
 window.switchMoveVariant = function(button, move) {
   // Update active tab
@@ -660,284 +549,177 @@ window.switchMoveVariant = function(button, move) {
   }
 };
 
-window.getMoveType = function(move) {
-  const baseMove = move.replace(/['2]/g, '');
-  const isPrime = move.includes("'");
-  const isDouble = move.includes("2");
-  
-  if (baseMove.match(/[RUFDLB]/)) {
-    return isPrime ? 'face-prime' : isDouble ? 'face-double' : 'face';
-  } else if (baseMove.match(/[rufdlb]/)) {
-    return isPrime ? 'wide-prime' : isDouble ? 'wide-double' : 'wide';
-  } else if (baseMove.match(/[MES]/)) {
-    return isPrime ? 'slice-prime' : isDouble ? 'slice-double' : 'slice';
-  } else if (baseMove.match(/[xyz]/)) {
-    return isPrime ? 'rotation-prime' : isDouble ? 'rotation-double' : 'rotation';
-  }
-  return 'face';
-};
-
+window.getMoveType = getMoveType;
 window.getMoveDefinition = getMoveDefinition;
 window.showMoveDefinitionModal = showMoveDefinitionModal;
 
 function initializeCrossComponents() {
-  // One move insert cases - single moves that place edges correctly
-  // With yellow on top, blue front, red right
-  const basicCrossRight = document.getElementById('basic-cross-right');
-  if (basicCrossRight) {
-    new CubeComponent(basicCrossRight, {
+  // Cross component configurations
+  const crossConfigs = [
+    // One move insert cases
+    {
+      id: 'basic-cross-right',
       title: 'One Move Insert: R',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R'],
-      interval: 3000,
       setupAlg: "z2 R'",
-      cumulative: false,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  const basicCrossLeft = document.getElementById('basic-cross-left');
-  if (basicCrossLeft) {
-    new CubeComponent(basicCrossLeft, {
+    },
+    {
+      id: 'basic-cross-left',
       title: 'One Move Insert: L\'',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['L\''],
-      interval: 3000,
       setupAlg: "z2 L",
-      cumulative: false,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  const basicCrossFront = document.getElementById('basic-cross-front');
-  if (basicCrossFront) {
-    new CubeComponent(basicCrossFront, {
+    },
+    {
+      id: 'basic-cross-front',
       title: 'One Move Insert: L',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['L'],
-      interval: 3000,
       setupAlg: "z2 L'",
-      cumulative: false,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  const basicCrossBack = document.getElementById('basic-cross-back');
-  if (basicCrossBack) {
-    new CubeComponent(basicCrossBack, {
+    },
+    {
+      id: 'basic-cross-back',
       title: 'One Move Insert: R\'',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R\''],
-      interval: 3000,
       setupAlg: "z2 R",
-      cumulative: false,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Daisy method step 1
-  const daisyStep1 = document.getElementById('daisy-step1');
-  if (daisyStep1) {
-    new CubeComponent(daisyStep1, {
+    },
+    
+    // Daisy method steps
+    {
+      id: 'daisy-step1',
       title: 'Daisy Pattern',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''],
       interval: 1500,
       setupAlg: 'z',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Daisy method step 2
-  const daisyStep2 = document.getElementById('daisy-step2');
-  if (daisyStep2) {
-    new CubeComponent(daisyStep2, {
+    },
+    {
+      id: 'daisy-step2',
       title: 'Convert to Cross',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['F2', 'R2', 'B2', 'L2'],
       interval: 2000,
       setupAlg: 'z',
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Cross + 1 Case 1
-  const crossPlus1Case1 = document.getElementById('cross-plus-1-case1');
-  if (crossPlus1Case1) {
-    new CubeComponent(crossPlus1Case1, {
+    },
+    
+    // Cross + 1 cases
+    {
+      id: 'cross-plus-1-case1',
       title: 'Cross + 1 (UFR)',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''],
       interval: 1000,
       setupAlg: 'z',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Cross + 1 Case 2
-  const crossPlus1Case2 = document.getElementById('cross-plus-1-case2');
-  if (crossPlus1Case2) {
-    new CubeComponent(crossPlus1Case2, {
+    },
+    {
+      id: 'cross-plus-1-case2',
       title: 'Cross + 1 (UFL)',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'],
       interval: 1000,
       setupAlg: 'z',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // X-Cross example
-  const xCrossExample = document.getElementById('x-cross-example');
-  if (xCrossExample) {
-    new CubeComponent(xCrossExample, {
+    },
+    
+    // X-Cross example
+    {
+      id: 'x-cross-example',
       title: 'X-Cross Example',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''],
       interval: 800,
       setupAlg: 'z',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Planning example
-  const planningExample = document.getElementById('planning-example');
-  if (planningExample) {
-    new CubeComponent(planningExample, {
+    },
+    
+    // Planning example
+    {
+      id: 'planning-example',
       title: 'Cross Planning',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
       interval: 1200,
       setupAlg: 'z',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // White cross
-  const whiteCross = document.getElementById('white-cross');
-  if (whiteCross) {
-    new CubeComponent(whiteCross, {
+    },
+    
+    // Cross patterns
+    {
+      id: 'white-cross',
       title: 'White Cross',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
       interval: 1500,
       setupAlg: 'z',
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Yellow cross
-  const yellowCross = document.getElementById('yellow-cross');
-  if (yellowCross) {
-    new CubeComponent(yellowCross, {
+    },
+    {
+      id: 'yellow-cross',
       title: 'Yellow Cross',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
       interval: 1500,
       setupAlg: 'z',
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Line pattern
-  const linePattern = document.getElementById('line-pattern');
-  if (linePattern) {
-    new CubeComponent(linePattern, {
+    },
+    
+    // OLL patterns
+    {
+      id: 'line-pattern',
       title: 'Line Pattern',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
       interval: 1200,
       setupAlg: 'z',
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // L-pattern
-  const lPattern = document.getElementById('l-pattern');
-  if (lPattern) {
-    new CubeComponent(lPattern, {
+    },
+    {
+      id: 'l-pattern',
       title: 'L-Pattern',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['F', 'U', 'R', 'U\'', 'R\'', 'F\''],
       interval: 1200,
       setupAlg: 'z',
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Dot pattern
-  const dotPattern = document.getElementById('dot-pattern');
-  if (dotPattern) {
-    new CubeComponent(dotPattern, {
+    },
+    {
+      id: 'dot-pattern',
       title: 'Dot Pattern',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
       interval: 600,
       setupAlg: 'z',
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  // Practice scrambles
-  const easyScramble = document.getElementById('easy-scramble');
-  if (easyScramble) {
-    new CubeComponent(easyScramble, {
+    },
+    
+    // Practice scrambles
+    {
+      id: 'easy-scramble',
       title: 'Easy Cross',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
       interval: 1000,
       setupAlg: 'z2',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  const mediumScramble = document.getElementById('medium-scramble');
-  if (mediumScramble) {
-    new CubeComponent(mediumScramble, {
+    },
+    {
+      id: 'medium-scramble',
       title: 'Medium Cross',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
       interval: 1000,
       setupAlg: 'z2',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
-
-  const hardScramble = document.getElementById('hard-scramble');
-  if (hardScramble) {
-    new CubeComponent(hardScramble, {
+    },
+    {
+      id: 'hard-scramble',
       title: 'Hard Cross',
-      show2D: false,
-      showMoveDisplay: true,
       moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''],
       interval: 800,
       setupAlg: 'z2',
       cumulative: true,
       mask: CUBE_MASKS.CROSS_ONLY
-    });
-  }
+    }
+  ];
+
+  createCubeComponentsFromConfig(crossConfigs);
 } 
