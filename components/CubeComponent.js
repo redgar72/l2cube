@@ -99,7 +99,17 @@ class CubeComponent {
         e.stopPropagation();
         const move = e.target.textContent;
         const type = window.getMoveType(move);
-        window.showMoveDefinitionModal(move, type);
+        
+        // Capture the current state of the 3D cube (or 2D if 3D not available)
+        const sourceTwistyPlayer = this.cube3D || this.cube2D;
+        const sourceCubeState = sourceTwistyPlayer ? {
+          setupAlg: sourceTwistyPlayer.getAttribute('experimental-setup-alg') || "x2",
+          currentAlg: sourceTwistyPlayer.getAttribute('alg') || "",
+          mask: sourceTwistyPlayer.getAttribute('experimental-stickering-mask-orbits') || "",
+          visualization: sourceTwistyPlayer.getAttribute('visualization') || "3D"
+        } : null;
+        
+        window.showMoveDefinitionModal(move, type, sourceCubeState);
       }
     });
   }
@@ -152,23 +162,23 @@ class CubeComponent {
       const cumulativeAlg = movesSoFar.join(' ');
       
       if (this.cube3D) {
-        this.cube3D.alg = cumulativeAlg;
+        this.cube3D.setAttribute('alg', cumulativeAlg);
         this.cube3D.play();
       }
       
       if (this.cube2D) {
-        this.cube2D.alg = cumulativeAlg;
+        this.cube2D.setAttribute('alg', cumulativeAlg);
         this.cube2D.play();
       }
     } else {
       // Play individual moves
       if (this.cube3D) {
-        this.cube3D.alg = currentMove;
+        this.cube3D.setAttribute('alg', currentMove);
         this.cube3D.play();
       }
       
       if (this.cube2D) {
-        this.cube2D.alg = currentMove;
+        this.cube2D.setAttribute('alg', currentMove);
         this.cube2D.play();
       }
     }

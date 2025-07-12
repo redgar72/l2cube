@@ -227,8 +227,8 @@ const COMPONENT_CONFIGS = {
       { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "z2 R", mask: CUBE_MASKS.CROSS_ONLY },
       
       // Daisy method
-      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, mask: CUBE_MASKS.CROSS_ONLY },
       
       // Cross + 1 cases
       { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
@@ -241,13 +241,13 @@ const COMPONENT_CONFIGS = {
       { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
       
       // Cross patterns
-      { id: 'white-cross', title: 'White Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'yellow-cross', title: 'Yellow Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'white-cross', title: 'White Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'yellow-cross', title: 'Yellow Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, mask: CUBE_MASKS.CROSS_ONLY },
       
       // OLL patterns
-      { id: 'line-pattern', title: 'Line Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 1200, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'l-pattern', title: 'L-Pattern', moves: ['F', 'U', 'R', 'U\'', 'R\'', 'F\''], interval: 1200, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'dot-pattern', title: 'Dot Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 600, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'line-pattern', title: 'Line Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 1200, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'l-pattern', title: 'L-Pattern', moves: ['F', 'U', 'R', 'U\'', 'R\'', 'F\''], interval: 1200, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'dot-pattern', title: 'Dot Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 600, mask: CUBE_MASKS.CROSS_ONLY },
       
       // Practice scrambles
       { id: 'easy-scramble', title: 'Easy Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1000, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
@@ -437,8 +437,8 @@ const TEMPLATES = {
   mainMove: (component) => `
     <div class="cube-component clickable" id="${component.id}" onclick="handleMainMoveClick(event, '${component.id}')">
       <h3>${component.title}</h3>
-      <button class="move-symbol" onclick="event.stopPropagation(); showMainMoveModal('${component.title}', ${JSON.stringify(component.moves)})">${component.moves[1] || component.moves[0]}</button>
-      <div class="cube-demo" onclick="event.stopPropagation(); showMainMoveModal('${component.title}', ${JSON.stringify(component.moves)})"></div>
+      <button class="move-symbol" onclick="event.stopPropagation(); handleMainMoveModalClick(event, '${component.title}', ${JSON.stringify(component.moves)})">${component.moves[1] || component.moves[0]}</button>
+      <div class="cube-demo" onclick="event.stopPropagation(); handleMainMoveModalClick(event, '${component.title}', ${JSON.stringify(component.moves)})"></div>
     </div>
   `,
   
@@ -650,6 +650,55 @@ function getMoveType(move) {
   return 'face';
 }
 
+// Helper function to capture the current state of a twisty-player
+function captureCubeState(twistyPlayer) {
+  if (!twistyPlayer) return null;
+  
+  // Get the current algorithm from the twisty-player's internal state
+  let currentAlg = "";
+  try {
+    // Try to get the current algorithm from the twisty-player's state
+    if (twistyPlayer.experimentalModel && twistyPlayer.experimentalModel.alg) {
+      currentAlg = twistyPlayer.experimentalModel.alg.toString();
+    } else if (twistyPlayer.getAttribute('alg')) {
+      currentAlg = twistyPlayer.getAttribute('alg');
+    }
+  } catch (e) {
+    // If we can't get the current alg, use the attribute or default to empty
+    currentAlg = twistyPlayer.getAttribute('alg') || "";
+  }
+  
+  return {
+    setupAlg: twistyPlayer.getAttribute('experimental-setup-alg') || "x2",
+    currentAlg: currentAlg,
+    mask: twistyPlayer.getAttribute('experimental-stickering-mask-orbits') || "",
+    visualization: twistyPlayer.getAttribute('visualization') || "3D"
+  };
+}
+
+// Helper function to find the source twisty-player from a click event
+function findSourceTwistyPlayer(event) {
+  console.log('findSourceTwistyPlayer called, target:', event.target);
+  
+  // Look for the closest twisty-player element
+  const twistyPlayer = event.target.closest('twisty-player');
+  if (twistyPlayer) {
+    console.log('Found twisty-player directly:', twistyPlayer);
+    return twistyPlayer;
+  }
+  
+  // If not found, look for the closest cube container and find its twisty-player
+  const cubeContainer = event.target.closest('.cube-container, .cube-component, .cube-demo');
+  if (cubeContainer) {
+    const foundTwisty = cubeContainer.querySelector('twisty-player');
+    console.log('Found twisty-player in container:', foundTwisty);
+    return foundTwisty;
+  }
+  
+  console.log('No twisty-player found');
+  return null;
+}
+
 // Helper function to get move definition with modifiers
 function getMoveDefinition(move, type) {
   const baseMove = move.replace(/['2]/g, '');
@@ -828,14 +877,23 @@ function initializeMoveButtons() {
   // Add click handlers to move buttons
   document.addEventListener('click', (e) => {
     if (e.target.classList.contains('move-button')) {
+      console.log('Move button clicked:', e.target.dataset.move);
       const move = e.target.dataset.move;
       const type = e.target.dataset.type;
-      showMoveDefinitionModal(move, type);
+      
+      // Find the source twisty-player to capture its state
+      const sourceTwistyPlayer = findSourceTwistyPlayer(e);
+      const sourceCubeState = sourceTwistyPlayer ? captureCubeState(sourceTwistyPlayer) : null;
+      
+      console.log('Source cube state:', sourceCubeState);
+      showMoveDefinitionModal(move, type, sourceCubeState);
     }
   });
 }
 
-function showMoveDefinitionModal(move, type) {
+function showMoveDefinitionModal(move, type, sourceCubeState = null) {
+  console.log('showMoveDefinitionModal called with:', { move, type, sourceCubeState });
+  
   // Create modal overlay
   const modalOverlay = document.createElement('div');
   modalOverlay.className = 'modal-overlay';
@@ -853,6 +911,18 @@ function showMoveDefinitionModal(move, type) {
     { move: baseMove + "'", label: 'Prime', active: isPrime },
     { move: baseMove + "2", label: 'Double', active: isDouble }
   ];
+  
+  // Determine the setup and algorithm to use
+  let setupAlg = "x2";
+  let currentAlg = move;
+  let mask = "";
+  
+  if (sourceCubeState) {
+    // Use the source cube's state
+    setupAlg = sourceCubeState.setupAlg || "x2";
+    currentAlg = sourceCubeState.currentAlg || move;
+    mask = sourceCubeState.mask || "";
+  }
   
   // Modal HTML with both 3D and 2D twisty-players side by side, and a toggle button for 2D in the header
   modalOverlay.innerHTML = `
@@ -880,8 +950,9 @@ function showMoveDefinitionModal(move, type) {
               id="move-def-twisty-3d"
               control-panel="none"
               background="none"
-              alg="${move}"
-              experimental-setup-alg="x2"
+              alg="${currentAlg}"
+              experimental-setup-alg="${setupAlg}"
+              ${mask ? `experimental-stickering-mask-orbits="${mask}"` : ''}
             ></twisty-player>
           </div>
           <div class="move-cube-demo move-cube-demo-2d">
@@ -891,8 +962,9 @@ function showMoveDefinitionModal(move, type) {
               visualization="2D"
               control-panel="none"
               background="none"
-              alg="${move}"
-              experimental-setup-alg="x2"
+              alg="${currentAlg}"
+              experimental-setup-alg="${setupAlg}"
+              ${mask ? `experimental-stickering-mask-orbits="${mask}"` : ''}
             ></twisty-player>
           </div>
           <div class="move-description">
@@ -974,11 +1046,36 @@ window.switchMoveVariant = function(button, move) {
   tabs.forEach(tab => tab.classList.remove('active'));
   button.classList.add('active');
   
-  // Update cube demo
-  const cube = button.closest('.modal-content').querySelector('.cube-3d');
-  if (cube) {
-    cube.alg = move;
-    cube.play();
+  // Update cube demo - preserve the current setup and mask
+  const cube3d = button.closest('.modal-content').querySelector('.cube-3d');
+  const cube2d = button.closest('.modal-content').querySelector('.cube-2d');
+  
+  if (cube3d) {
+    // Get current setup and mask from the cube
+    const setupAlg = cube3d.getAttribute('experimental-setup-alg') || "x2";
+    const mask = cube3d.getAttribute('experimental-stickering-mask-orbits') || "";
+    
+    // Apply the new move while preserving setup and mask
+    cube3d.setAttribute('alg', move);
+    cube3d.setAttribute('experimental-setup-alg', setupAlg);
+    if (mask) {
+      cube3d.setAttribute('experimental-stickering-mask-orbits', mask);
+    }
+    cube3d.play();
+  }
+  
+  if (cube2d) {
+    // Get current setup and mask from the cube
+    const setupAlg = cube2d.getAttribute('experimental-setup-alg') || "x2";
+    const mask = cube2d.getAttribute('experimental-stickering-mask-orbits') || "";
+    
+    // Apply the new move while preserving setup and mask
+    cube2d.setAttribute('alg', move);
+    cube2d.setAttribute('experimental-setup-alg', setupAlg);
+    if (mask) {
+      cube2d.setAttribute('experimental-stickering-mask-orbits', mask);
+    }
+    cube2d.play();
   }
   
   // Update description
@@ -1006,12 +1103,36 @@ function handleMainMoveClick(event, componentId) {
   }
 }
 
+// Helper function to handle main move modal clicks with state capture
+function handleMainMoveModalClick(event, title, moves) {
+  console.log('handleMainMoveModalClick called with:', { title, moves });
+  
+  // Find the source twisty-player to capture its state
+  const sourceTwistyPlayer = findSourceTwistyPlayer(event);
+  const sourceCubeState = sourceTwistyPlayer ? captureCubeState(sourceTwistyPlayer) : null;
+  
+  console.log('Source cube state for main move modal:', sourceCubeState);
+  showMainMoveModal(title, moves, sourceCubeState);
+}
+
 // Function to show modal for main move types
-function showMainMoveModal(title, moves) {
+function showMainMoveModal(title, moves, sourceCubeState = null) {
   console.log('showMainMoveModal called', title, moves);
   // Create modal overlay
   const modalOverlay = document.createElement('div');
   modalOverlay.className = 'modal-overlay';
+  
+  // Determine the setup and algorithm to use
+  let setupAlg = "x2";
+  let currentAlg = moves.join(' ');
+  let mask = "";
+  
+  if (sourceCubeState) {
+    // Use the source cube's state
+    setupAlg = sourceCubeState.setupAlg || "x2";
+    currentAlg = sourceCubeState.currentAlg || moves.join(' ');
+    mask = sourceCubeState.mask || "";
+  }
   
   // Modal HTML with 2D toggle button in the header
   modalOverlay.innerHTML = `
@@ -1028,15 +1149,16 @@ function showMainMoveModal(title, moves) {
             id="main-move-twisty"
             control-panel="none"
             background="none"
-            alg="${moves.join(' ')}"
-            experimental-setup-alg="x2"
+            alg="${currentAlg}"
+            experimental-setup-alg="${setupAlg}"
+            ${mask ? `experimental-stickering-mask-orbits="${mask}"` : ''}
           ></twisty-player>
         </div>
         <div class="main-move-description">
           <h4>${title}</h4>
           <p>Click on any move notation below to see its definition:</p>
           <div class="move-buttons">
-            ${moves.map(move => `<button class="move-button" onclick="event.stopPropagation(); showMoveDefinitionModal('${move}', 'face')">${move}</button>`).join('')}
+            ${moves.map(move => `<button class="move-button" data-move="${move}" data-type="face">${move}</button>`).join('')}
           </div>
         </div>
       </div>
@@ -1045,6 +1167,27 @@ function showMainMoveModal(title, moves) {
   
   // Add to body
   document.body.appendChild(modalOverlay);
+  
+  // Add click handlers for move buttons in this modal
+  const moveButtons = modalOverlay.querySelectorAll('.move-button');
+  moveButtons.forEach(button => {
+    button.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const move = button.dataset.move;
+      const type = button.dataset.type;
+      
+      // Get the current state from the modal's twisty-player
+      const modalTwisty = modalOverlay.querySelector('#main-move-twisty');
+      const modalCubeState = modalTwisty ? {
+        setupAlg: modalTwisty.getAttribute('experimental-setup-alg') || "x2",
+        currentAlg: modalTwisty.getAttribute('alg') || "",
+        mask: modalTwisty.getAttribute('experimental-stickering-mask-orbits') || "",
+        visualization: modalTwisty.getAttribute('visualization') || "3D"
+      } : null;
+      
+      showMoveDefinitionModal(move, type, modalCubeState);
+    });
+  });
   
   // 2D toggle logic
   const toggle2dBtn = modalOverlay.querySelector('#toggle-2d-btn');
@@ -1088,6 +1231,9 @@ window.getMoveType = getMoveType;
 window.getMoveDefinition = getMoveDefinition;
 window.showMoveDefinitionModal = showMoveDefinitionModal;
 window.handleMainMoveClick = handleMainMoveClick;
+window.handleMainMoveModalClick = handleMainMoveModalClick;
 window.showMainMoveModal = showMainMoveModal;
+window.captureCubeState = captureCubeState;
+window.findSourceTwistyPlayer = findSourceTwistyPlayer;
 
  
