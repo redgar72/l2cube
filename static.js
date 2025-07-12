@@ -82,6 +82,531 @@ const MOVE_DEFINITIONS = {
   z: { title: 'Z Rotation', description: 'Rotates the entire cube around the Z-axis (front-back).', direction: 'Clockwise', layer: 'Entire cube', angle: '90°' }
 };
 
+// Component configurations organized by section
+const COMPONENT_CONFIGS = {
+  welcome: {
+    sectionClass: 'welcome-section',
+    title: 'Welcome!',
+    description: 'This is your reference cube in solved state. Try clicking on move notation like R, U\', or F2 to see their definitions!',
+    additionalText: 'Basic moves include face turns (R, U\', F2, L, D, B), wide turns (r, u\', f, l, d, b), slice turns (M, E\', S2), and rotations (x, y, z\').',
+    containerClass: 'cube-container',
+    components: [
+      {
+        id: "welcome-cube-container",
+        title: "3D & 2D View",
+        show2D: true,
+        showMoveDisplay: true,
+        moves: ["R", "U", "F", "L", "D", "B", "R'", "U'", "F'", "L'", "D'", "B'"],
+        interval: 1500,
+        setupAlg: "x2"
+      }
+    ]
+  },
+  
+  mainMoves: {
+    sectionClass: 'main-moves',
+    title: 'Basic Move Types',
+    description: 'Click on any move type to see detailed breakdowns.',
+    containerClass: 'moves-grid',
+    components: [
+      {
+        id: "face-turns-container",
+        title: "Face Turns",
+        moves: ["R", "U", "F", "L", "D", "B"],
+        interval: 2000,
+        clickable: true,
+        onClick: () => scrollToSection('face-turns-breakdown')
+      },
+      {
+        id: "wide-turns-container", 
+        title: "Wide Turns",
+        moves: ["r", "u", "f", "l", "d", "b"],
+        interval: 2000,
+        clickable: true,
+        onClick: () => scrollToSection('wide-turns-breakdown')
+      },
+      {
+        id: "slice-turns-container",
+        title: "Slice Turns", 
+        moves: ["M", "E", "S"],
+        interval: 2000,
+        clickable: true,
+        onClick: () => scrollToSection('slice-turns-breakdown')
+      },
+      {
+        id: "rotations-container",
+        title: "Rotations",
+        moves: ["x", "y", "z"], 
+        interval: 2000,
+        clickable: true,
+        onClick: () => scrollToSection('rotations-breakdown')
+      }
+    ]
+  },
+  
+  faceTurnsBreakdown: {
+    sectionClass: 'face-turns-breakdown',
+    title: 'Face Turns Breakdown',
+    description: 'Individual face turn moves',
+    containerClass: 'moves-grid',
+    components: [
+      { id: 'r-move-container', move: 'R', title: 'R Move', moves: ['R'], interval: 3000 },
+      { id: 'u-move-container', move: 'U', title: 'U Move', moves: ['U'], interval: 3000 },
+      { id: 'f-move-container', move: 'F', title: 'F Move', moves: ['F'], interval: 3000 },
+      { id: 'l-move-container', move: 'L', title: 'L Move', moves: ['L'], interval: 3000 },
+      { id: 'd-move-container', move: 'D', title: 'D Move', moves: ['D'], interval: 3000 },
+      { id: 'b-move-container', move: 'B', title: 'B Move', moves: ['B'], interval: 3000 }
+    ]
+  },
+  
+  wideTurnsBreakdown: {
+    sectionClass: 'wide-turns-breakdown',
+    title: 'Wide Turns Breakdown',
+    description: 'Individual wide turn moves',
+    containerClass: 'moves-grid',
+    components: [
+      { id: 'r-wide-container', move: 'r', title: 'r Move', moves: ['r'], interval: 3000 },
+      { id: 'u-wide-container', move: 'u', title: 'u Move', moves: ['u'], interval: 3000 },
+      { id: 'f-wide-container', move: 'f', title: 'f Move', moves: ['f'], interval: 3000 },
+      { id: 'l-wide-container', move: 'l', title: 'l Move', moves: ['l'], interval: 3000 },
+      { id: 'd-wide-container', move: 'd', title: 'd Move', moves: ['d'], interval: 3000 },
+      { id: 'b-wide-container', move: 'b', title: 'b Move', moves: ['b'], interval: 3000 }
+    ]
+  },
+  
+  sliceTurnsBreakdown: {
+    sectionClass: 'slice-turns-breakdown',
+    title: 'Slice Turns Breakdown',
+    description: 'Individual slice turn moves',
+    containerClass: 'moves-grid',
+    components: [
+      { id: 'm-slice-container', move: 'M', title: 'M Move', moves: ['M'], interval: 3000 },
+      { id: 'e-slice-container', move: 'E', title: 'E Move', moves: ['E'], interval: 3000 },
+      { id: 's-slice-container', move: 'S', title: 'S Move', moves: ['S'], interval: 3000 }
+    ]
+  },
+  
+  rotationsBreakdown: {
+    sectionClass: 'rotations-breakdown',
+    title: 'Rotations Breakdown',
+    description: 'Individual rotation moves',
+    containerClass: 'moves-grid',
+    components: [
+      { id: 'x-rotation-container', move: 'x', title: 'x Rotation', moves: ['x'], interval: 3000 },
+      { id: 'y-rotation-container', move: 'y', title: 'y Rotation', moves: ['y'], interval: 3000 },
+      { id: 'z-rotation-container', move: 'z', title: 'z Rotation', moves: ['z'], interval: 3000 }
+    ]
+  },
+  
+  moveDefinitions: {
+    sectionClass: 'move-definitions',
+    title: 'Move Definitions',
+    description: 'Click on any move notation to see its definition and demonstration.',
+    containerClass: 'move-definitions-container',
+    components: []
+  },
+  
+  f2l: {
+    sectionClass: 'f2l',
+    title: 'F2L (First Two Layers)',
+    description: 'Solving the first two layers efficiently',
+    introText: 'F2L is the second step of CFOP method. It involves solving the corners and edges of the first two layers simultaneously.',
+    components: []
+  },
+  
+  cross: {
+    sectionClass: 'cross',
+    title: 'Cross',
+    description: 'Solving the white cross efficiently',
+    introText: 'The cross is the foundation of CFOP solving. A well-executed cross should be completed in 8 moves or fewer, typically without rotations. This section covers various cross techniques with a focus on rotationless methods.',
+    components: [
+      // Basic cross cases
+      { id: 'basic-cross-right', title: 'One Move Insert: R', moves: ['R'], setupAlg: "z2 R'", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "z2 L", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "z2 L'", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "z2 R", mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // Daisy method
+      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // Cross + 1 cases
+      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // X-Cross example
+      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // Planning example
+      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // Cross patterns
+      { id: 'white-cross', title: 'White Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'yellow-cross', title: 'Yellow Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // OLL patterns
+      { id: 'line-pattern', title: 'Line Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 1200, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'l-pattern', title: 'L-Pattern', moves: ['F', 'U', 'R', 'U\'', 'R\'', 'F\''], interval: 1200, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'dot-pattern', title: 'Dot Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 600, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      
+      // Practice scrambles
+      { id: 'easy-scramble', title: 'Easy Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1000, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'medium-scramble', title: 'Medium Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1000, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'hard-scramble', title: 'Hard Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY }
+    ]
+  }
+};
+
+// Template system for generating HTML
+const TEMPLATES = {
+  section: (config) => {
+    const { sectionClass, title, description, introText, additionalText, containerClass, components } = config;
+    
+    // Group components by type for better organization
+    const groupedComponents = groupComponentsByType(components);
+    
+    return `
+      <section class="${sectionClass}">
+        <h2>${title}</h2>
+        ${description ? `<p>${description}</p>` : ''}
+        ${introText ? `
+          <div class="cross-intro">
+            <p>${introText}</p>
+          </div>
+        ` : ''}
+        ${additionalText ? `<p>${additionalText}</p>` : ''}
+        ${containerClass ? `<div class="${containerClass}">` : ''}
+          ${generateGroupedComponents(groupedComponents)}
+        ${containerClass ? '</div>' : ''}
+        ${sectionClass === 'cross' ? TEMPLATES.crossTips : ''}
+      </section>
+    `;
+  },
+  
+  // Individual component templates
+  basicCross: (component) => `
+    <div class="cross-case-box">
+      <div class="cube-demo" id="${component.id}"></div>
+    </div>
+  `,
+  
+  daisyStep: (component) => {
+    const stepData = {
+      'daisy-step1': {
+        title: 'Step 1: Create the Daisy',
+        description: 'Move all white edges to the top layer with white facing up, forming a daisy pattern.'
+      },
+      'daisy-step2': {
+        title: 'Step 2: Convert to Cross',
+        description: 'For each edge, align it with its center and do F2 to insert it.'
+      }
+    };
+    const data = stepData[component.id];
+    
+    return `
+      <h4>${data.title}</h4>
+      <p>${data.description}</p>
+      <div class="cube-demo" id="${component.id}"></div>
+    `;
+  },
+  
+  crossPlusOne: (component) => {
+    const caseData = {
+      'cross-plus-1-case1': {
+        title: 'Case 1: Corner in UFR',
+        description: 'When white corner is in UFR with white on top:',
+        solution: 'R U R\' (cross edge) + U R U\' R\' (corner)'
+      },
+      'cross-plus-1-case2': {
+        title: 'Case 2: Corner in UFL',
+        description: 'When white corner is in UFL with white on top:',
+        solution: 'L\' U\' L (cross edge) + U\' L\' U L (corner)'
+      }
+    };
+    const data = caseData[component.id];
+    
+    return `
+      <div class="case">
+        <h5>${data.title}</h5>
+        <p>${data.description}</p>
+        <p>${data.solution}</p>
+        <div class="cube-demo" id="${component.id}"></div>
+      </div>
+    `;
+  },
+  
+  xCrossExample: (component) => `
+    <div class="case">
+      <h5>X-Cross Example</h5>
+      <p>Cross: R U R' F' U F</p>
+      <p>F2L Pair: U R U' R'</p>
+      <p>Total: R U R' F' U F U R U' R'</p>
+      <div class="cube-demo" id="${component.id}"></div>
+    </div>
+  `,
+  
+  planningExample: (component) => `
+    <h4>Planning Example</h4>
+    <p>Given this scramble: R U R' F' U F U R U' R'</p>
+    <p>Planned solution: R U R' F' U F (6 moves)</p>
+    <div class="cube-demo" id="${component.id}"></div>
+  `,
+  
+  colorCross: (component) => {
+    const colorData = {
+      'white-cross': {
+        title: 'White Cross',
+        description: 'Traditional approach, good for beginners'
+      },
+      'yellow-cross': {
+        title: 'Yellow Cross',
+        description: 'Alternative approach, can be more efficient'
+      }
+    };
+    const data = colorData[component.id];
+    
+    return `
+      <div class="color-example">
+        <h4>${data.title}</h4>
+        <p>${data.description}</p>
+        <div class="cube-demo" id="${component.id}"></div>
+      </div>
+    `;
+  },
+  
+  pattern: (component) => {
+    const patternData = {
+      'line-pattern': {
+        title: 'Line Pattern',
+        description: 'Two edges form a line on the top face',
+        solution: 'F R U R\' U\' F\''
+      },
+      'l-pattern': {
+        title: 'L-Pattern',
+        description: 'Two edges form an L-shape on the top face',
+        solution: 'F U R U\' R\' F\''
+      },
+      'dot-pattern': {
+        title: 'Dot Pattern',
+        description: 'No edges are solved on the top face',
+        solution: 'F R U R\' U\' F\' U2 F R U R\' U\' F\''
+      }
+    };
+    const data = patternData[component.id];
+    
+    return `
+      <div class="pattern">
+        <h4>${data.title}</h4>
+        <p>${data.description}</p>
+        <p>Solution: ${data.solution}</p>
+        <div class="cube-demo" id="${component.id}"></div>
+      </div>
+    `;
+  },
+  
+  scramble: (component) => {
+    const scrambleData = {
+      'easy-scramble': {
+        title: 'Easy Cross (4-6 moves)',
+        scramble: 'R U R\' F\' U F',
+        solution: 'R U R\' F\' U F'
+      },
+      'medium-scramble': {
+        title: 'Medium Cross (6-8 moves)',
+        scramble: 'R U R\' F\' U F U R U\' R\'',
+        solution: 'R U R\' F\' U F'
+      },
+      'hard-scramble': {
+        title: 'Hard Cross (8+ moves)',
+        scramble: 'R U R\' F\' U F U R U\' R\' F U F\'',
+        solution: 'R U R\' F\' U F U R U\' R\''
+      }
+    };
+    const data = scrambleData[component.id];
+    
+    return `
+      <div class="scramble">
+        <h4>${data.title}</h4>
+        <p>Scramble: ${data.scramble}</p>
+        <p>Solution: ${data.solution}</p>
+        <div class="cube-demo" id="${component.id}"></div>
+      </div>
+    `;
+  },
+  
+  mainMove: (component) => `
+    <div class="cube-component clickable" id="${component.id}" onclick="handleMainMoveClick(event, '${component.id}')">
+      <h3>${component.title}</h3>
+      <button class="move-symbol" onclick="event.stopPropagation(); showMainMoveModal('${component.title}', ${JSON.stringify(component.moves)})">${component.moves[1] || component.moves[0]}</button>
+      <div class="cube-demo" onclick="event.stopPropagation(); showMainMoveModal('${component.title}', ${JSON.stringify(component.moves)})"></div>
+    </div>
+  `,
+  
+  default: (component) => `<div id="${component.id}"></div>`,
+  
+  crossTips: `
+    <!-- Cross Tips -->
+    <div class="cross-tips">
+      <h3>Cross Solving Tips</h3>
+      <ul>
+        <li><strong>Practice inspection:</strong> Use the full 15 seconds to plan your cross</li>
+        <li><strong>Look ahead:</strong> While solving the cross, look for your first F2L pair</li>
+        <li><strong>Finger tricks:</strong> Learn efficient finger tricks for cross moves</li>
+        <li><strong>Color neutrality:</strong> Consider learning to solve on multiple colors</li>
+        <li><strong>Cross + 1:</strong> Practice solving cross and one corner together</li>
+        <li><strong>X-cross:</strong> Advanced technique to solve cross and first F2L pair</li>
+      </ul>
+    </div>
+  `
+};
+
+// Helper function to group components by type
+function groupComponentsByType(components) {
+  const groups = {
+    basicCross: [],
+    daisySteps: [],
+    crossPlusOne: [],
+    xCrossExample: [],
+    planningExample: [],
+    colorCross: [],
+    patterns: [],
+    scrambles: [],
+    mainMoves: [],
+    default: []
+  };
+  
+  components.forEach(component => {
+    const { id } = component;
+    
+    if (id.includes('basic-cross-')) {
+      groups.basicCross.push(component);
+    } else if (id.includes('daisy-step')) {
+      groups.daisySteps.push(component);
+    } else if (id.includes('cross-plus-1')) {
+      groups.crossPlusOne.push(component);
+    } else if (id === 'x-cross-example') {
+      groups.xCrossExample.push(component);
+    } else if (id === 'planning-example') {
+      groups.planningExample.push(component);
+    } else if (id === 'white-cross' || id === 'yellow-cross') {
+      groups.colorCross.push(component);
+    } else if (id.includes('pattern')) {
+      groups.patterns.push(component);
+    } else if (id.includes('scramble')) {
+      groups.scrambles.push(component);
+    } else if (id.includes('-container') && (id.includes('turns') || id.includes('rotations'))) {
+      groups.mainMoves.push(component);
+    } else {
+      groups.default.push(component);
+    }
+  });
+  
+  return groups;
+}
+
+// Helper function to generate grouped components with proper wrappers
+function generateGroupedComponents(groups) {
+  let html = '';
+  
+  // Basic cross cases in a grid
+  if (groups.basicCross.length > 0) {
+    html += '<div class="cross-cases-grid">\n';
+    html += groups.basicCross.map(TEMPLATES.basicCross).join('');
+    html += '</div>\n';
+  }
+  
+  // Daisy steps
+  if (groups.daisySteps.length > 0) {
+    html += '<div class="technique-steps">\n';
+    html += groups.daisySteps.map(TEMPLATES.daisyStep).join('');
+    html += '</div>\n';
+  }
+  
+  // Cross + 1 cases
+  if (groups.crossPlusOne.length > 0) {
+    html += '<div class="example-cases">\n';
+    html += groups.crossPlusOne.map(TEMPLATES.crossPlusOne).join('');
+    html += '</div>\n';
+  }
+  
+  // X-cross example
+  if (groups.xCrossExample.length > 0) {
+    html += '<div class="example-cases">\n';
+    html += groups.xCrossExample.map(TEMPLATES.xCrossExample).join('');
+    html += '</div>\n';
+  }
+  
+  // Planning example
+  if (groups.planningExample.length > 0) {
+    html += '<div class="planning-example">\n';
+    html += groups.planningExample.map(TEMPLATES.planningExample).join('');
+    html += '</div>\n';
+  }
+  
+  // Color cross examples
+  if (groups.colorCross.length > 0) {
+    html += '<div class="color-examples">\n';
+    html += groups.colorCross.map(TEMPLATES.colorCross).join('');
+    html += '</div>\n';
+  }
+  
+  // Cross patterns
+  if (groups.patterns.length > 0) {
+    html += '<div class="cross-patterns">\n';
+    html += groups.patterns.map(TEMPLATES.pattern).join('');
+    html += '</div>\n';
+  }
+  
+  // Practice scrambles
+  if (groups.scrambles.length > 0) {
+    html += '<div class="practice-scrambles">\n';
+    html += groups.scrambles.map(TEMPLATES.scramble).join('');
+    html += '</div>\n';
+  }
+  
+  // Main moves (basic move types)
+  if (groups.mainMoves.length > 0) {
+    html += groups.mainMoves.map(TEMPLATES.mainMove).join('');
+  }
+  
+  // Default components
+  html += groups.default.map(TEMPLATES.default).join('');
+  
+  return html;
+}
+
+// Function to generate HTML for a section
+function generateSectionHTML(sectionConfig) {
+  return TEMPLATES.section(sectionConfig);
+}
+
+// Function to generate all sections and insert them into the DOM
+function generateAllSections() {
+  const sectionsContainer = document.getElementById('sections-container');
+  
+  if (!sectionsContainer) {
+    console.error('Sections container not found');
+    return;
+  }
+  
+  console.log('Generating sections...');
+  
+  Object.values(COMPONENT_CONFIGS).forEach(sectionConfig => {
+    const html = generateSectionHTML(sectionConfig);
+    
+    // Create a temporary container to parse the HTML
+    const temp = document.createElement('div');
+    temp.innerHTML = html;
+    const section = temp.firstElementChild;
+    
+    // Insert the section into the DOM
+    sectionsContainer.appendChild(section);
+    console.log(`Added section: ${sectionConfig.sectionClass}`);
+  });
+  
+  console.log('All sections generated successfully');
+}
+
 // Helper function to create CubeComponent with default settings
 function createCubeComponent(containerId, options = {}) {
   const container = document.getElementById(containerId);
@@ -161,6 +686,9 @@ function getMoveDefinition(move, type) {
 
 window.addEventListener("DOMContentLoaded", () => {
   console.log("DOM loaded, initializing components...");
+  
+  // Generate all sections from configurations
+  generateAllSections();
   
   // Initialize cube components
   initializeCubeComponents();
@@ -243,124 +771,11 @@ function initializeNavigation() {
 }
 
 function initializeCubeComponents() {
-  // Welcome section - random moves with both 3D and 2D
-  createCubeComponent("welcome-cube-container", {
-    title: "3D & 2D View",
-    show2D: true,
-    showMoveDisplay: true,
-    moves: ["R", "U", "F", "L", "D", "B", "R'", "U'", "F'", "L'", "D'", "B'"],
-    interval: 1500,
-    setupAlg: "x2"
+  // Create components from all section configurations
+  Object.values(COMPONENT_CONFIGS).forEach(sectionConfig => {
+    createCubeComponentsFromConfig(sectionConfig.components);
   });
-
-  // Main move type demonstrations - clickable to scroll to breakdown
-  const mainMoveConfigs = [
-    {
-      id: "face-turns-container",
-      title: "Face Turns",
-      moves: ["R", "U", "F", "L", "D", "B"],
-      interval: 2000,
-      clickable: true,
-      onClick: () => scrollToSection('face-turns-breakdown')
-    },
-    {
-      id: "wide-turns-container", 
-      title: "Wide Turns",
-      moves: ["r", "u", "f", "l", "d", "b"],
-      interval: 2000,
-      clickable: true,
-      onClick: () => scrollToSection('wide-turns-breakdown')
-    },
-    {
-      id: "slice-turns-container",
-      title: "Slice Turns", 
-      moves: ["M", "E", "S"],
-      interval: 2000,
-      clickable: true,
-      onClick: () => scrollToSection('slice-turns-breakdown')
-    },
-    {
-      id: "rotations-container",
-      title: "Rotations",
-      moves: ["x", "y", "z"], 
-      interval: 2000,
-      clickable: true,
-      onClick: () => scrollToSection('rotations-breakdown')
-    }
-  ];
-
-  createCubeComponentsFromConfig(mainMoveConfigs);
-
-  // Initialize individual move components in breakdown sections
-  initializeBreakdownComponents();
-  
-  // Initialize cross section components
-  initializeCrossComponents();
 }
-
-function initializeBreakdownComponents() {
-  // Face turns breakdown - individual moves
-  const faceMoves = [
-    { id: 'r-move-container', move: 'R', title: 'R Move' },
-    { id: 'u-move-container', move: 'U', title: 'U Move' },
-    { id: 'f-move-container', move: 'F', title: 'F Move' },
-    { id: 'l-move-container', move: 'L', title: 'L Move' },
-    { id: 'd-move-container', move: 'D', title: 'D Move' },
-    { id: 'b-move-container', move: 'B', title: 'B Move' }
-  ];
-
-  createCubeComponentsFromConfig(faceMoves.map(({ id, move, title }) => ({
-    id,
-    title,
-    moves: [move],
-    interval: 3000
-  })));
-
-  // Wide turns breakdown - individual moves
-  const wideMoves = [
-    { id: 'r-wide-container', move: 'r', title: 'r Move' },
-    { id: 'u-wide-container', move: 'u', title: 'u Move' },
-    { id: 'f-wide-container', move: 'f', title: 'f Move' },
-    { id: 'l-wide-container', move: 'l', title: 'l Move' },
-    { id: 'd-wide-container', move: 'd', title: 'd Move' },
-    { id: 'b-wide-container', move: 'b', title: 'b Move' }
-  ];
-
-  createCubeComponentsFromConfig(wideMoves.map(({ id, move, title }) => ({
-    id,
-    title,
-    moves: [move],
-    interval: 3000
-  })));
-
-  // Slice turns breakdown - individual moves
-  const sliceMoves = [
-    { id: 'm-slice-container', move: 'M', title: 'M Move' },
-    { id: 'e-slice-container', move: 'E', title: 'E Move' },
-    { id: 's-slice-container', move: 'S', title: 'S Move' }
-  ];
-
-  createCubeComponentsFromConfig(sliceMoves.map(({ id, move, title }) => ({
-    id,
-    title,
-    moves: [move],
-    interval: 3000
-  })));
-
-  // Rotations breakdown - individual moves
-  const rotationMoves = [
-    { id: 'x-rotation-container', move: 'x', title: 'x Rotation' },
-    { id: 'y-rotation-container', move: 'y', title: 'y Rotation' },
-    { id: 'z-rotation-container', move: 'z', title: 'z Rotation' }
-  ];
-
-  createCubeComponentsFromConfig(rotationMoves.map(({ id, move, title }) => ({
-    id,
-    title,
-    moves: [move],
-    interval: 3000
-  })));
-} 
 
 // Utility function to convert move notation to clickable buttons
 function initializeMoveButtons() {
@@ -439,11 +854,15 @@ function showMoveDefinitionModal(move, type) {
     { move: baseMove + "2", label: 'Double', active: isDouble }
   ];
   
+  // Modal HTML with both 3D and 2D twisty-players side by side, and a toggle button for 2D in the header
   modalOverlay.innerHTML = `
     <div class="modal-content">
-      <div class="modal-header">
-        <h3>${move} Move Definition</h3>
-        <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">×</button>
+      <div class="modal-header" style="display: flex; justify-content: space-between; align-items: center;">
+        <h3 style="margin:0;">${move} Move Definition</h3>
+        <div style="display: flex; gap: 8px; align-items: center;">
+          <button class="toggle-2d-btn" id="toggle-2d-btn">Hide 2D</button>
+          <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">×</button>
+        </div>
       </div>
       <div class="modal-body">
         <div class="move-variants-tabs">
@@ -454,10 +873,22 @@ function showMoveDefinitionModal(move, type) {
             </button>
           `).join('')}
         </div>
-        <div class="move-definition-content">
+        <div class="move-definition-content side-by-side-cubes">
           <div class="move-cube-demo">
             <twisty-player
               class="cube-3d"
+              id="move-def-twisty-3d"
+              control-panel="none"
+              background="none"
+              alg="${move}"
+              experimental-setup-alg="x2"
+            ></twisty-player>
+          </div>
+          <div class="move-cube-demo move-cube-demo-2d">
+            <twisty-player
+              class="cube-2d"
+              id="move-def-twisty-2d"
+              visualization="2D"
               control-panel="none"
               background="none"
               alg="${move}"
@@ -486,6 +917,24 @@ function showMoveDefinitionModal(move, type) {
   
   // Add to body
   document.body.appendChild(modalOverlay);
+  
+  // 2D toggle logic (show/hide 2D player only)
+  const toggle2dBtn = modalOverlay.querySelector('#toggle-2d-btn');
+  const twisty2d = modalOverlay.querySelector('#move-def-twisty-2d');
+  let is2DVisible = true;
+  toggle2dBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    is2DVisible = !is2DVisible;
+    if (is2DVisible) {
+      twisty2d.style.display = '';
+      toggle2dBtn.textContent = 'Hide 2D';
+      toggle2dBtn.classList.remove('inactive');
+    } else {
+      twisty2d.style.display = 'none';
+      toggle2dBtn.textContent = 'Show 2D';
+      toggle2dBtn.classList.add('inactive');
+    }
+  });
   
   // Add event listeners
   modalOverlay.addEventListener('click', (e) => {
@@ -549,177 +998,96 @@ window.switchMoveVariant = function(button, move) {
   }
 };
 
+// Helper function to handle main move component clicks
+function handleMainMoveClick(event, componentId) {
+  // Only scroll if the click wasn't on the cube demo
+  if (!event.target.closest('.cube-demo')) {
+    scrollToSection(componentId.replace('-container', '-breakdown'));
+  }
+}
+
+// Function to show modal for main move types
+function showMainMoveModal(title, moves) {
+  console.log('showMainMoveModal called', title, moves);
+  // Create modal overlay
+  const modalOverlay = document.createElement('div');
+  modalOverlay.className = 'modal-overlay';
+  
+  // Modal HTML with 2D toggle button in the header
+  modalOverlay.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3>${title}</h3>
+        <button class="toggle-2d-btn" id="toggle-2d-btn" title="Toggle 2D view">2D</button>
+        <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">×</button>
+      </div>
+      <div class="modal-body">
+        <div class="main-move-demo">
+          <twisty-player
+            class="cube-3d"
+            id="main-move-twisty"
+            control-panel="none"
+            background="none"
+            alg="${moves.join(' ')}"
+            experimental-setup-alg="x2"
+          ></twisty-player>
+        </div>
+        <div class="main-move-description">
+          <h4>${title}</h4>
+          <p>Click on any move notation below to see its definition:</p>
+          <div class="move-buttons">
+            ${moves.map(move => `<button class="move-button" onclick="event.stopPropagation(); showMoveDefinitionModal('${move}', 'face')">${move}</button>`).join('')}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+  
+  // Add to body
+  document.body.appendChild(modalOverlay);
+  
+  // 2D toggle logic
+  const toggle2dBtn = modalOverlay.querySelector('#toggle-2d-btn');
+  const twisty = modalOverlay.querySelector('#main-move-twisty');
+  let is2D = false;
+  toggle2dBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    is2D = !is2D;
+    if (is2D) {
+      twisty.setAttribute('show-2d', '');
+      twisty.show2D = true;
+    } else {
+      twisty.removeAttribute('show-2d');
+      twisty.show2D = false;
+    }
+  });
+  
+  // Add event listeners
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      modalOverlay.remove();
+      document.body.style.overflow = '';
+    }
+  });
+  
+  // Add keyboard listener for escape key
+  const handleKeydown = (e) => {
+    if (e.key === 'Escape') {
+      modalOverlay.remove();
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeydown);
+    }
+  };
+  document.addEventListener('keydown', handleKeydown);
+  
+  // Disable body scroll
+  document.body.style.overflow = 'hidden';
+}
+
 window.getMoveType = getMoveType;
 window.getMoveDefinition = getMoveDefinition;
 window.showMoveDefinitionModal = showMoveDefinitionModal;
+window.handleMainMoveClick = handleMainMoveClick;
+window.showMainMoveModal = showMainMoveModal;
 
-function initializeCrossComponents() {
-  // Cross component configurations
-  const crossConfigs = [
-    // One move insert cases
-    {
-      id: 'basic-cross-right',
-      title: 'One Move Insert: R',
-      moves: ['R'],
-      setupAlg: "z2 R'",
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'basic-cross-left',
-      title: 'One Move Insert: L\'',
-      moves: ['L\''],
-      setupAlg: "z2 L",
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'basic-cross-front',
-      title: 'One Move Insert: L',
-      moves: ['L'],
-      setupAlg: "z2 L'",
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'basic-cross-back',
-      title: 'One Move Insert: R\'',
-      moves: ['R\''],
-      setupAlg: "z2 R",
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // Daisy method steps
-    {
-      id: 'daisy-step1',
-      title: 'Daisy Pattern',
-      moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''],
-      interval: 1500,
-      setupAlg: 'z',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'daisy-step2',
-      title: 'Convert to Cross',
-      moves: ['F2', 'R2', 'B2', 'L2'],
-      interval: 2000,
-      setupAlg: 'z',
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // Cross + 1 cases
-    {
-      id: 'cross-plus-1-case1',
-      title: 'Cross + 1 (UFR)',
-      moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''],
-      interval: 1000,
-      setupAlg: 'z',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'cross-plus-1-case2',
-      title: 'Cross + 1 (UFL)',
-      moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'],
-      interval: 1000,
-      setupAlg: 'z',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // X-Cross example
-    {
-      id: 'x-cross-example',
-      title: 'X-Cross Example',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''],
-      interval: 800,
-      setupAlg: 'z',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // Planning example
-    {
-      id: 'planning-example',
-      title: 'Cross Planning',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
-      interval: 1200,
-      setupAlg: 'z',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // Cross patterns
-    {
-      id: 'white-cross',
-      title: 'White Cross',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
-      interval: 1500,
-      setupAlg: 'z',
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'yellow-cross',
-      title: 'Yellow Cross',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
-      interval: 1500,
-      setupAlg: 'z',
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // OLL patterns
-    {
-      id: 'line-pattern',
-      title: 'Line Pattern',
-      moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''],
-      interval: 1200,
-      setupAlg: 'z',
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'l-pattern',
-      title: 'L-Pattern',
-      moves: ['F', 'U', 'R', 'U\'', 'R\'', 'F\''],
-      interval: 1200,
-      setupAlg: 'z',
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'dot-pattern',
-      title: 'Dot Pattern',
-      moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''],
-      interval: 600,
-      setupAlg: 'z',
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    
-    // Practice scrambles
-    {
-      id: 'easy-scramble',
-      title: 'Easy Cross',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
-      interval: 1000,
-      setupAlg: 'z2',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'medium-scramble',
-      title: 'Medium Cross',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'],
-      interval: 1000,
-      setupAlg: 'z2',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    },
-    {
-      id: 'hard-scramble',
-      title: 'Hard Cross',
-      moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''],
-      interval: 800,
-      setupAlg: 'z2',
-      cumulative: true,
-      mask: CUBE_MASKS.CROSS_ONLY
-    }
-  ];
-
-  createCubeComponentsFromConfig(crossConfigs);
-} 
+ 
