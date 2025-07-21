@@ -563,7 +563,7 @@ h3 {
 /* Move Button Styles */
 .move-button {
   display: inline-block;
-  background: linear-gradient(135deg, #4CAF50, #45a049);
+  background-color: #4CAF50;
   color: white;
   border: none;
   border-radius: 20px;
@@ -579,7 +579,7 @@ h3 {
 }
 
 .move-button:hover {
-  background: linear-gradient(135deg, #45a049, #3d8b40);
+  background-color: #45a049;
   transform: translateY(-1px);
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
 }
@@ -590,11 +590,11 @@ h3 {
 }
 
 .move-button-prime {
-  background: linear-gradient(135deg, #00BCD4, #0097A7);
+  background-color: #00BCD4;
 }
 
 .move-button-prime:hover {
-  background: linear-gradient(135deg, #0097A7, #006064);
+  background-color: #0097A7;
 }
 
 /* Move Definition Modal Styles */
@@ -622,20 +622,20 @@ h3 {
 }
 
 .move-variant-tab.active {
-  background: linear-gradient(135deg, #4CAF50, #45a049);
-  border-color: #4CAF50;
+  /* background: linear-gradient(135deg, #4CAF50, #45a049); */
+  /* border-color: #4CAF50; */
   color: white;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
 }
 
 .move-variant-tab.active[data-move*="'"] {
-  background: linear-gradient(135deg, #00BCD4, #0097A7);
-  border-color: #00BCD4;
+  /* background: linear-gradient(135deg, #00BCD4, #0097A7); */
+  /* border-color: #00BCD4; */
 }
 
 .move-variant-tab.active[data-move*="2"] {
-  background: linear-gradient(135deg, #F44336, #D32F2F);
-  border-color: #F44336;
+  /* background: linear-gradient(135deg, #F44336, #D32F2F); */
+  /* border-color: #F44336; */
 }
 
 .move-definition-content {

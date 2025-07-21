@@ -1,5 +1,6 @@
 // Modal system for move definitions and demonstrations
 import { getMoveType, getMoveDefinition, captureCubeState, findSourceTwistyPlayer } from './moveUtils.js';
+import { MOVE_COLORS } from './constants.js';
 
 // Function to show modal for move definitions
 export function showMoveDefinitionModal(move, type, sourceCubeState = null) {
@@ -18,9 +19,9 @@ export function showMoveDefinitionModal(move, type, sourceCubeState = null) {
   const isDouble = move.includes("2");
   
   const moveVariants = [
-    { move: baseMove, label: 'Base', active: !isPrime && !isDouble },
-    { move: baseMove + "'", label: 'Prime', active: isPrime },
-    { move: baseMove + "2", label: 'Double', active: isDouble }
+    { move: baseMove, label: 'Base', active: !isPrime && !isDouble, colorType: 'normal' },
+    { move: baseMove + "'", label: 'Prime', active: isPrime, colorType: 'prime' },
+    { move: baseMove + "2", label: 'Double', active: isDouble, colorType: 'double' }
   ];
   
   // Determine the setup and algorithm to use
@@ -47,12 +48,11 @@ export function showMoveDefinitionModal(move, type, sourceCubeState = null) {
       </div>
       <div class="modal-body">
         <div class="move-variants-tabs">
-          ${moveVariants.map(variant => `
-            <button class="move-variant-tab ${variant.active ? 'active' : ''}" 
-                    data-move="${variant.move}">
-              ${variant.label} (${variant.move})
-            </button>
-          `).join('')}
+          ${moveVariants.map(variant => {
+            const color = MOVE_COLORS[variant.colorType];
+            const style = color ? ` style=\"background-color: ${color}; color: white;\"` : '';
+            return `<button class=\"move-variant-tab${variant.active ? ' active' : ''}\" data-move=\"${variant.move}\"${style}>${variant.label} (${variant.move})</button>`;
+          }).join('')}
         </div>
         <div class="move-definition-content side-by-side-cubes">
           <div class="move-cube-demo">

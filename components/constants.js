@@ -81,3 +81,10 @@ export const MOVE_DEFINITIONS = {
   y: { title: 'Y Rotation', description: 'Rotates the entire cube around the Y-axis (up-down).', direction: 'Clockwise', layer: 'Entire cube', angle: '90°' },
   z: { title: 'Z Rotation', description: 'Rotates the entire cube around the Z-axis (front-back).', direction: 'Clockwise', layer: 'Entire cube', angle: '90°' }
 }; 
+
+// Move type color overrides for buttons and modals
+export const MOVE_COLORS = {
+  normal: '#444',      // Dark gray for normal moves
+  prime: '#1565c0',    // Dark blue for prime moves
+  double: '#388e3c',   // Dark green for double moves
+}; 
