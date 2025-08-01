@@ -44,7 +44,7 @@ class CubeComponent {
             class="cube-3d"
             control-panel="none"
             background="none"
-            alg="${this.options.moves[0] || ''}"
+            alg=""
             experimental-setup-alg="${this.options.setupAlg}"
             ${this.options.mask ? `experimental-stickering-mask-orbits="${this.options.mask}"` : ''}
           ></twisty-player>
@@ -53,7 +53,7 @@ class CubeComponent {
               class="cube-2d"
               control-panel="none"
               background="none"
-              alg="${this.options.moves[0] || ''}"
+              alg=""
               visualization="2D"
               experimental-setup-alg="${this.options.setupAlg}"
               ${this.options.mask ? `experimental-stickering-mask-orbits="${this.options.mask}"` : ''}
@@ -129,15 +129,34 @@ class CubeComponent {
     
     this.isAnimating = true;
     
-    // Start immediately
-    this.playCurrentMove();
-    this.advanceMove();
-    
-    // Then continue with interval
-    this.animationInterval = setInterval(() => {
+    // If there are multiple moves, play them all as one sequence
+    if (this.options.moves.length > 1) {
+      const fullAlg = this.options.moves.join(' ');
+      
+      if (this.moveSymbol) {
+        this.moveSymbol.textContent = this.options.moves.join(' ');
+      }
+      
+      if (this.cube3D) {
+        this.cube3D.setAttribute('alg', fullAlg);
+        this.cube3D.play();
+      }
+      
+      if (this.cube2D) {
+        this.cube2D.setAttribute('alg', fullAlg);
+        this.cube2D.play();
+      }
+    } else {
+      // Single move - use existing logic
       this.playCurrentMove();
       this.advanceMove();
-    }, this.options.interval);
+      
+      // Then continue with interval
+      this.animationInterval = setInterval(() => {
+        this.playCurrentMove();
+        this.advanceMove();
+      }, this.options.interval);
+    }
   }
   
   stopAnimation() {
@@ -145,6 +164,23 @@ class CubeComponent {
     if (this.animationInterval) {
       clearInterval(this.animationInterval);
       this.animationInterval = null;
+    }
+    
+    // Reset to unsolved state
+    this.currentMoveIndex = 0;
+    if (this.moveSymbol && this.options.moves.length > 0) {
+      this.moveSymbol.textContent = this.options.moves[0];
+    }
+    
+    // Reset cubes to setup state (unsolved)
+    if (this.cube3D) {
+      this.cube3D.setAttribute('alg', '');
+      this.cube3D.play();
+    }
+    
+    if (this.cube2D) {
+      this.cube2D.setAttribute('alg', '');
+      this.cube2D.play();
     }
   }
   

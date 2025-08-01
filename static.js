@@ -270,7 +270,7 @@ const TEMPLATES = {
         <h2>${title}</h2>
         ${description ? `<p>${description}</p>` : ''}
         ${introText ? `
-          <div class="cross-intro">
+          <div class="tip">
             <p>${introText}</p>
           </div>
         ` : ''}

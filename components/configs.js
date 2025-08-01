@@ -124,30 +124,72 @@ export const COMPONENT_CONFIGS = {
     components: []
   },
   
-  f2l: {
-    sectionClass: 'f2l',
-    title: 'F2L (First Two Layers)',
-    description: 'Solving the first two layers efficiently',
-    introText: 'F2L is the second step of CFOP method. It involves solving the corners and edges of the first two layers simultaneously.',
-    components: []
-  },
-  
   cross: {
     sectionClass: 'cross',
     title: 'Cross',
     description: 'Solving the white cross efficiently',
     introText: 'The cross is the foundation of CFOP solving. A well-executed cross should be completed in 8 moves or fewer, typically without rotations. This section covers various cross techniques with a focus on rotationless methods.',
+    components: []
+  },
+  
+  goodEdges: {
+    sectionClass: 'good-edges',
+    title: 'Good Edges',
+    description: 'Edges that can be inserted without rotating the cube',
+    introText: 'Good edges are the foundation of efficient cross solving. These are edges that can be inserted with a single move without requiring cube rotations.',
     components: [
-      // Basic cross cases
+      // Basic cross cases (good edges) - 3x2 grid
       { id: 'basic-cross-right', title: 'One Move Insert: R', moves: ['R'], setupAlg: "z2 R'", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "z2 L", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "z2 L'", mask: CUBE_MASKS.CROSS_ONLY },
       { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "z2 R", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-r2', title: 'One Move Insert: R2', moves: ['R2'], setupAlg: "z2 R2", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "z2 L'", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "z2 L", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-l2', title: 'One Move Insert: L2', moves: ['L2'], setupAlg: "z2 L2", mask: CUBE_MASKS.CROSS_ONLY },
       
+      { type: 'text', content: '<div class="tip"><p><strong>Good Edges</strong> are edges that can be inserted without rotating the cube. These are the most efficient cases to learn first.</p></div>' },
+      
+      // Top layer cases - white edge facing up but in wrong position
+      { id: 'top-edge-front', title: 'Edge in Front: U\' R2', moves: ['U\'', 'R2'], setupAlg: "z2 R2 U", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'top-edge-back', title: 'Edge in Back: U\' L2', moves: ['U\'', 'L2'], setupAlg: "z2 L2 U", mask: CUBE_MASKS.CROSS_ONLY },
+      
+      { type: 'text', content: '<div class="tip"><p>When the white edge is on top but in the wrong position, first move it to the correct side, then insert with R2 or L2.</p></div>' }
+    ]
+  },
+  
+  badEdges: {
+    sectionClass: 'bad-edges',
+    title: 'Bad Edges',
+    description: 'Edges that require cube rotations to insert',
+    introText: 'Bad edges require cube rotations to insert efficiently. While not ideal, understanding these cases helps with overall cross planning.',
+    components: [
+      // Bad edge examples
+      { id: 'bad-edge-example1', title: 'Bad Edge Example 1', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, setupAlg: "z2", cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'bad-edge-example2', title: 'Bad Edge Example 2', moves: ['L\'', 'U\'', 'L', 'F\'', 'U\'', 'F'], interval: 1500, setupAlg: "z2", cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      
+      { type: 'text', content: '<div class="tip"><p><strong>Bad Edges</strong> are edges that require rotating the cube to insert. These cases are less efficient but still important to understand.</p></div>' }
+    ]
+  },
+  
+  daisy: {
+    sectionClass: 'daisy',
+    title: 'Daisy Method',
+    description: 'Beginner-friendly approach to cross solving',
+    introText: 'The daisy method is a beginner-friendly approach that creates a "daisy" pattern first, then converts it to a cross.',
+    components: [
       // Daisy method
       { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
       { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, mask: CUBE_MASKS.CROSS_ONLY },
       
+      { type: 'text', content: '<div class="tip"><p>The daisy method is great for beginners. First create the daisy pattern, then convert each edge to the cross using F2 moves.</p></div>' }
+    ]
+  },
+  
+  crossAdvanced: {
+    sectionClass: 'cross-advanced',
+    title: 'Advanced Cross',
+    description: 'Advanced cross techniques and planning',
+    introText: 'Advanced cross techniques include Cross + 1, X-Cross, and advanced planning methods.',
+    components: [
       // Cross + 1 cases
       { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
       { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
@@ -158,21 +200,17 @@ export const COMPONENT_CONFIGS = {
       // Planning example
       { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
       
-      // Cross patterns
-      { id: 'white-cross', title: 'White Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'yellow-cross', title: 'Yellow Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1500, mask: CUBE_MASKS.CROSS_ONLY },
-      
-      // OLL patterns
-      { id: 'line-pattern', title: 'Line Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 1200, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'l-pattern', title: 'L-Pattern', moves: ['F', 'U', 'R', 'U\'', 'R\'', 'F\''], interval: 1200, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'dot-pattern', title: 'Dot Pattern', moves: ['F', 'R', 'U', 'R\'', 'U\'', 'F\'', 'U2', 'F', 'R', 'U', 'R\'', 'U\'', 'F\''], interval: 600, mask: CUBE_MASKS.CROSS_ONLY },
-      
-      // Practice scrambles
-      { id: 'easy-scramble', title: 'Easy Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1000, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'medium-scramble', title: 'Medium Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1000, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'hard-scramble', title: 'Hard Cross', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z2', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY }
+      { type: 'text', content: '<div class="tip"><p>Advanced techniques like Cross + 1 and X-Cross can significantly improve your solve times.</p></div>' }
     ]
-  }
+  },
+  
+  f2l: {
+    sectionClass: 'f2l',
+    title: 'F2L (First Two Layers)',
+    description: 'Solving the first two layers efficiently',
+    introText: 'F2L is the second step of CFOP method. It involves solving the corners and edges of the first two layers simultaneously.',
+    components: []
+  },
 };
 
 // Helper function to scroll to section (needed for onClick handlers)

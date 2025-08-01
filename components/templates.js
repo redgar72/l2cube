@@ -3,21 +3,25 @@ export const TEMPLATES = {
   section: (config) => {
     const { sectionClass, title, description, introText, additionalText, containerClass, components } = config;
     
-    // Group components by type for better organization
-    const groupedComponents = groupComponentsByType(components);
+    // Generate content in original order
+    const content = generateOrderedContent(components);
     
     return `
       <section class="${sectionClass}">
         <h2>${title}</h2>
         ${description ? `<p>${description}</p>` : ''}
         ${introText ? `
-          <div class="cross-intro">
+          <div class="tip">
             <p>${introText}</p>
           </div>
         ` : ''}
-        ${additionalText ? `<p>${additionalText}</p>` : ''}
+        ${additionalText ? `
+          <div class="tip">
+            <p>${additionalText}</p>
+          </div>
+        ` : ''}
         ${containerClass ? `<div class="${containerClass}">` : ''}
-          ${generateGroupedComponents(groupedComponents)}
+          ${content}
         ${containerClass ? '</div>' : ''}
         ${sectionClass === 'cross' ? TEMPLATES.crossTips : ''}
       </section>
@@ -198,13 +202,17 @@ export const TEMPLATES = {
         <li><strong>X-cross:</strong> Advanced technique to solve cross and first F2L pair</li>
       </ul>
     </div>
-  `
+  `,
+  
+  // Text component template
+  text: (component) => component.content
 };
 
 // Helper function to group components by type
 function groupComponentsByType(components) {
   const groups = {
     basicCross: [],
+    topEdges: [],
     daisySteps: [],
     crossPlusOne: [],
     xCrossExample: [],
@@ -213,14 +221,17 @@ function groupComponentsByType(components) {
     patterns: [],
     scrambles: [],
     mainMoves: [],
+    text: [],
     default: []
   };
   
   //todo: Find a better way to handle this than a  massive else if chain
   components.forEach(component => {
-    const { id } = component;
+    const { id, type } = component;
     
-    if (id.includes('basic-cross-')) {
+    if (type === 'text') {
+      groups.text.push(component);
+    } else if (id.includes('basic-cross-')) {
       groups.basicCross.push(component);
     } else if (id.includes('daisy-step')) {
       groups.daisySteps.push(component);
@@ -255,6 +266,13 @@ function generateGroupedComponents(groups) {
   if (groups.basicCross.length > 0) {
     html += '<div class="cross-cases-grid">\n';
     html += groups.basicCross.map(TEMPLATES.basicCross).join('');
+    html += '</div>\n';
+  }
+  
+  // Top edge cases in a grid
+  if (groups.topEdges.length > 0) {
+    html += '<div class="top-edges-grid">\n';
+    html += groups.topEdges.map(TEMPLATES.basicCross).join('');
     html += '</div>\n';
   }
   
@@ -316,6 +334,135 @@ function generateGroupedComponents(groups) {
   html += groups.default.map(TEMPLATES.default).join('');
   
   return html;
+}
+
+// Function to generate content in original component order
+function generateOrderedContent(components) {
+  let html = '';
+  let currentGroup = null;
+  let groupComponents = [];
+  
+  components.forEach(component => {
+    const { id, type } = component;
+    
+    // Handle text components immediately
+    if (type === 'text') {
+      // Flush any pending group
+      if (currentGroup && groupComponents.length > 0) {
+        html += renderGroup(currentGroup, groupComponents);
+        groupComponents = [];
+        currentGroup = null;
+      }
+      // Render text component
+      html += TEMPLATES.text(component);
+      return;
+    }
+    
+    // Determine component group using configuration
+    const group = determineComponentGroup(id);
+    
+    // If group changed, flush previous group
+    if (currentGroup && currentGroup !== group) {
+      html += renderGroup(currentGroup, groupComponents);
+      groupComponents = [];
+    }
+    
+    currentGroup = group;
+    groupComponents.push(component);
+  });
+  
+  // Flush final group
+  if (currentGroup && groupComponents.length > 0) {
+    html += renderGroup(currentGroup, groupComponents);
+  }
+  
+  return html;
+}
+
+// Component group configurations
+const GROUP_CONFIGS = {
+  basicCross: {
+    wrapper: 'cross-cases-grid',
+    template: TEMPLATES.basicCross,
+    patterns: ['basic-cross-']
+  },
+  topEdges: {
+    wrapper: 'cross-cases-grid',
+    template: TEMPLATES.basicCross,
+    patterns: ['top-edge-']
+  },
+  daisySteps: {
+    wrapper: 'technique-steps',
+    template: TEMPLATES.daisyStep,
+    patterns: ['daisy-step']
+  },
+  crossPlusOne: {
+    wrapper: 'example-cases',
+    template: TEMPLATES.crossPlusOne,
+    patterns: ['cross-plus-1']
+  },
+  xCrossExample: {
+    wrapper: 'example-cases',
+    template: TEMPLATES.xCrossExample,
+    patterns: ['x-cross-example']
+  },
+  planningExample: {
+    wrapper: 'planning-example',
+    template: TEMPLATES.planningExample,
+    patterns: ['planning-example']
+  },
+  colorCross: {
+    wrapper: 'color-examples',
+    template: TEMPLATES.colorCross,
+    patterns: ['white-cross', 'yellow-cross']
+  },
+  patterns: {
+    wrapper: 'cross-patterns',
+    template: TEMPLATES.pattern,
+    patterns: ['pattern']
+  },
+  scrambles: {
+    wrapper: 'practice-scrambles',
+    template: TEMPLATES.scramble,
+    patterns: ['scramble']
+  },
+  mainMoves: {
+    template: TEMPLATES.mainMove,
+    patterns: ['-container'],
+    conditions: (id) => id.includes('turns') || id.includes('rotations')
+  },
+  default: {
+    template: TEMPLATES.default,
+    patterns: []
+  }
+};
+
+// Helper function to determine component group
+function determineComponentGroup(id) {
+  for (const [groupName, config] of Object.entries(GROUP_CONFIGS)) {
+    if (config.patterns.some(pattern => id.includes(pattern))) {
+      // Check additional conditions if they exist
+      if (config.conditions && !config.conditions(id)) {
+        continue;
+      }
+      return groupName;
+    }
+  }
+  return 'default';
+}
+
+// Helper function to render a group of components
+function renderGroup(groupType, components) {
+  const config = GROUP_CONFIGS[groupType];
+  if (!config) return '';
+  
+  const content = components.map(config.template).join('');
+  
+  if (config.wrapper) {
+    return `<div class="${config.wrapper}">\n${content}</div>\n`;
+  }
+  
+  return content;
 }
 
 // Function to generate HTML for a section

@@ -763,7 +763,7 @@ h3 {
   backdrop-filter: blur(10px);
 }
 
-.cross-intro {
+.tip {
   margin-bottom: 30px;
   padding: 20px;
   background: rgba(255, 255, 255, 0.05);
@@ -999,6 +999,13 @@ h3 {
 }
 
 .cross-cases-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 2rem;
+  margin: 2rem 0;
+}
+
+.top-edges-grid {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 2rem;
