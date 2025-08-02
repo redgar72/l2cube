@@ -1,6 +1,9 @@
 // Component configurations organized by section
 import { CUBE_MASKS } from './constants.js';
 
+// Experimental stickering configurations
+const CROSS_STICKERING = "Cross";
+
 export const COMPONENT_CONFIGS = {
   welcome: {
     sectionClass: 'welcome-section',
@@ -139,18 +142,18 @@ export const COMPONENT_CONFIGS = {
     introText: 'Good edges are the foundation of efficient cross solving. These are edges that can be inserted with a single move without requiring cube rotations.',
     components: [
       // Basic cross cases (good edges) - 3x2 grid
-      { id: 'basic-cross-right', title: 'One Move Insert: R', moves: ['R'], setupAlg: "z2 R'", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "z2 R", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-r2', title: 'One Move Insert: R2', moves: ['R2'], setupAlg: "z2 R2", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "z2 L'", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "z2 L", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'basic-cross-l2', title: 'One Move Insert: L2', moves: ['L2'], setupAlg: "z2 L2", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'basic-cross-right', title: 'One Move Insert: R', moves: ['R'], setupAlg: "R'", stickering: CROSS_STICKERING },
+      { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "R", stickering: CROSS_STICKERING },
+      { id: 'basic-cross-r2', title: 'One Move Insert: R2', moves: ['R2'], setupAlg: "R2", stickering: CROSS_STICKERING },
+      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "L'", stickering: CROSS_STICKERING },
+      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "L", stickering: CROSS_STICKERING },
+      { id: 'basic-cross-l2', title: 'One Move Insert: L2', moves: ['L2'], setupAlg: "L2", stickering: CROSS_STICKERING },
       
       { type: 'text', content: '<div class="tip"><p><strong>Good Edges</strong> are edges that can be inserted without rotating the cube. These are the most efficient cases to learn first.</p></div>' },
       
       // Top layer cases - white edge facing up but in wrong position
-      { id: 'top-edge-front', title: 'Edge in Front: U\' R2', moves: ['U\'', 'R2'], setupAlg: "z2 R2 U", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'top-edge-back', title: 'Edge in Back: U\' L2', moves: ['U\'', 'L2'], setupAlg: "z2 L2 U", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'top-edge-front', title: 'Edge in Front: U\' R2', moves: ['U\'', 'R2'], setupAlg: "R2 U", stickering: CROSS_STICKERING },
+      { id: 'top-edge-back', title: 'Edge in Back: U\' L2', moves: ['U\'', 'L2'], setupAlg: "L2 U", stickering: CROSS_STICKERING },
       
       { type: 'text', content: '<div class="tip"><p>When the white edge is on top but in the wrong position, first move it to the correct side, then insert with R2 or L2.</p></div>' }
     ]
@@ -163,8 +166,8 @@ export const COMPONENT_CONFIGS = {
     introText: 'Bad edges require cube rotations to insert efficiently. While not ideal, understanding these cases helps with overall cross planning.',
     components: [
       // Bad edge examples
-      { id: 'bad-edge-example1', title: 'Bad Edge Example 1', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], setupAlg: "z2", mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'bad-edge-example2', title: 'Bad Edge Example 2', moves: ['L\'', 'U\'', 'L', 'F\'', 'U\'', 'F'],  setupAlg: "z2", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'bad-edge-example1', title: 'Bad Edge Example 1', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], setupAlg: "", stickering: CROSS_STICKERING },
+      { id: 'bad-edge-example2', title: 'Bad Edge Example 2', moves: ['L\'', 'U\'', 'L', 'F\'', 'U\'', 'F'],  setupAlg: "", stickering: CROSS_STICKERING },
       
       { type: 'text', content: '<div class="tip"><p><strong>Bad Edges</strong> are edges that require rotating the cube to insert. These cases are less efficient but still important to understand.</p></div>' }
     ]
@@ -177,8 +180,8 @@ export const COMPONENT_CONFIGS = {
     introText: 'The daisy method is a beginner-friendly approach that creates a "daisy" pattern first, then converts it to a cross.',
     components: [
       // Daisy method
-      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, stickering: CROSS_STICKERING },
+      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, stickering: CROSS_STICKERING },
       
       { type: 'text', content: '<div class="tip"><p>The daisy method is great for beginners. First create the daisy pattern, then convert each edge to the cross using F2 moves.</p></div>' }
     ]
@@ -191,14 +194,14 @@ export const COMPONENT_CONFIGS = {
     introText: 'Advanced cross techniques include Cross + 1, X-Cross, and advanced planning methods.',
     components: [
       // Cross + 1 cases
-      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', stickering: CROSS_STICKERING },
+      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', stickering: CROSS_STICKERING },
       
       // X-Cross example
-      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z', stickering: CROSS_STICKERING },
       
       // Planning example
-      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', stickering: CROSS_STICKERING },
       
       { type: 'text', content: '<div class="tip"><p>Advanced techniques like Cross + 1 and X-Cross can significantly improve your solve times.</p></div>' }
     ]

@@ -11,6 +11,7 @@ class CubeComponent {
       clickable: options.clickable !== false,
       onClick: options.onClick || null,
       mask: options.mask || '',
+      stickering: options.stickering || '',
       ...options
     };
     
@@ -45,7 +46,7 @@ class CubeComponent {
             background="none"
             alg=""
             experimental-setup-alg="${this.options.setupAlg}"
-            ${this.options.mask ? `experimental-stickering-mask-orbits="${this.options.mask}"` : ''}
+            ${this.options.stickering ? `experimental-stickering="${this.options.stickering}"` : ''}
           ></twisty-player>
           ${this.options.show2D ? `
             <twisty-player
@@ -55,7 +56,7 @@ class CubeComponent {
               alg=""
               visualization="2D"
               experimental-setup-alg="${this.options.setupAlg}"
-              ${this.options.mask ? `experimental-stickering-mask-orbits="${this.options.mask}"` : ''}
+              ${this.options.stickering ? `experimental-stickering="${this.options.stickering}"` : ''}
             ></twisty-player>
           ` : ''}
         </div>
