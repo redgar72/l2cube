@@ -10,7 +10,6 @@ class CubeComponent {
       setupAlg: options.setupAlg || '',
       clickable: options.clickable !== false,
       onClick: options.onClick || null,
-      cumulative: options.cumulative !== false,
       mask: options.mask || '',
       ...options
     };
@@ -129,13 +128,9 @@ class CubeComponent {
     
     this.isAnimating = true;
     
-    // If there are multiple moves, play them all as one sequence
+    // Play the full sequence smoothly
     if (this.options.moves.length > 1) {
       const fullAlg = this.options.moves.join(' ');
-      
-      if (this.moveSymbol) {
-        this.moveSymbol.textContent = this.options.moves.join(' ');
-      }
       
       if (this.cube3D) {
         this.cube3D.setAttribute('alg', fullAlg);
@@ -156,7 +151,20 @@ class CubeComponent {
         this.playCurrentMove();
         this.advanceMove();
       }, this.options.interval);
+      return;
     }
+    
+    // For multiple moves, cycle through moves in display
+    let currentMoveIndex = 0;
+    this.updateMoveDisplay(currentMoveIndex);
+    
+    // Update display at intervals
+    const displayInterval = this.options.interval / this.options.moves.length;
+    
+    this.animationInterval = setInterval(() => {
+      currentMoveIndex = (currentMoveIndex + 1) % this.options.moves.length;
+      this.updateMoveDisplay(currentMoveIndex);
+    }, displayInterval);
   }
   
   stopAnimation() {
@@ -192,36 +200,27 @@ class CubeComponent {
       this.moveSymbol.textContent = currentMove;
     }
     
-    if (this.options.cumulative) {
-      // Build up the algorithm progressively
-      const movesSoFar = this.options.moves.slice(0, this.currentMoveIndex + 1);
-      const cumulativeAlg = movesSoFar.join(' ');
-      
-      if (this.cube3D) {
-        this.cube3D.setAttribute('alg', cumulativeAlg);
-        this.cube3D.play();
-      }
-      
-      if (this.cube2D) {
-        this.cube2D.setAttribute('alg', cumulativeAlg);
-        this.cube2D.play();
-      }
-    } else {
-      // Play individual moves
-      if (this.cube3D) {
-        this.cube3D.setAttribute('alg', currentMove);
-        this.cube3D.play();
-      }
-      
-      if (this.cube2D) {
-        this.cube2D.setAttribute('alg', currentMove);
-        this.cube2D.play();
-      }
+    // Play individual moves
+    if (this.cube3D) {
+      this.cube3D.setAttribute('alg', currentMove);
+      this.cube3D.play();
+    }
+    
+    if (this.cube2D) {
+      this.cube2D.setAttribute('alg', currentMove);
+      this.cube2D.play();
     }
   }
   
   advanceMove() {
     this.currentMoveIndex = (this.currentMoveIndex + 1) % this.options.moves.length;
+  }
+  
+  updateMoveDisplay(moveIndex) {
+    const move = this.options.moves[moveIndex];
+    if (move && this.moveSymbol) {
+      this.moveSymbol.textContent = move;
+    }
   }
   
   // Public method to update moves

@@ -163,8 +163,8 @@ export const COMPONENT_CONFIGS = {
     introText: 'Bad edges require cube rotations to insert efficiently. While not ideal, understanding these cases helps with overall cross planning.',
     components: [
       // Bad edge examples
-      { id: 'bad-edge-example1', title: 'Bad Edge Example 1', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, setupAlg: "z2", cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'bad-edge-example2', title: 'Bad Edge Example 2', moves: ['L\'', 'U\'', 'L', 'F\'', 'U\'', 'F'], interval: 1500, setupAlg: "z2", cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'bad-edge-example1', title: 'Bad Edge Example 1', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], setupAlg: "z2", mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'bad-edge-example2', title: 'Bad Edge Example 2', moves: ['L\'', 'U\'', 'L', 'F\'', 'U\'', 'F'],  setupAlg: "z2", mask: CUBE_MASKS.CROSS_ONLY },
       
       { type: 'text', content: '<div class="tip"><p><strong>Bad Edges</strong> are edges that require rotating the cube to insert. These cases are less efficient but still important to understand.</p></div>' }
     ]
@@ -177,7 +177,7 @@ export const COMPONENT_CONFIGS = {
     introText: 'The daisy method is a beginner-friendly approach that creates a "daisy" pattern first, then converts it to a cross.',
     components: [
       // Daisy method
-      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, mask: CUBE_MASKS.CROSS_ONLY },
       { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, mask: CUBE_MASKS.CROSS_ONLY },
       
       { type: 'text', content: '<div class="tip"><p>The daisy method is great for beginners. First create the daisy pattern, then convert each edge to the cross using F2 moves.</p></div>' }
@@ -191,14 +191,14 @@ export const COMPONENT_CONFIGS = {
     introText: 'Advanced cross techniques include Cross + 1, X-Cross, and advanced planning methods.',
     components: [
       // Cross + 1 cases
-      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
-      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
       
       // X-Cross example
-      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
       
       // Planning example
-      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', cumulative: true, mask: CUBE_MASKS.CROSS_ONLY },
+      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', mask: CUBE_MASKS.CROSS_ONLY },
       
       { type: 'text', content: '<div class="tip"><p>Advanced techniques like Cross + 1 and X-Cross can significantly improve your solve times.</p></div>' }
     ]
