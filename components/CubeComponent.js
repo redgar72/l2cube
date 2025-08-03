@@ -77,13 +77,18 @@ class CubeComponent {
   }
   
   setupEventListeners() {
-    this.container.addEventListener('mouseenter', () => {
-      this.startAnimation();
-    });
+    // Get the cube-container element (the small pane around the cube)
+    const cubeContainer = this.container.querySelector('.cube-container');
     
-    this.container.addEventListener('mouseleave', () => {
-      this.stopAnimation();
-    });
+    if (cubeContainer) {
+      cubeContainer.addEventListener('mouseenter', () => {
+        this.startAnimation();
+      });
+      
+      cubeContainer.addEventListener('mouseleave', () => {
+        this.stopAnimation();
+      });
+    }
     
     if (this.options.clickable && this.options.onClick) {
       this.container.addEventListener('click', (e) => {

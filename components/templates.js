@@ -391,6 +391,16 @@ const GROUP_CONFIGS = {
     template: TEMPLATES.basicCross,
     patterns: ['top-edge-']
   },
+  badEdges: {
+    wrapper: 'bad-edges-grid',
+    template: TEMPLATES.basicCross,
+    patterns: ['bad-edge-']
+  },
+  f2lCases: {
+    wrapper: 'f2l-cases-grid',
+    template: TEMPLATES.basicCross,
+    patterns: ['f2l-case']
+  },
   daisySteps: {
     wrapper: 'technique-steps',
     template: TEMPLATES.daisyStep,
