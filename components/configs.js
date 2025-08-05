@@ -212,7 +212,34 @@ export const COMPONENT_CONFIGS = {
     title: 'F2L (First Two Layers)',
     description: 'Solving the first two layers efficiently',
     introText: 'F2L is the second step of CFOP method. It involves solving the corners and edges of the first two layers simultaneously.',
-    components: []
+    components: [
+      { type: 'text', content: '<div class="tip"><p>These are the easiest cases to solve. These are 3-move inserts.</p></div>' },
+      
+      // F2L examples
+      { id: 'f2l-case1', title: '3 move FR: R U\' R\'', moves: ['R', 'U\'', 'R\''], setupAlg: 'R U R\'', stickering: 'F2L' },
+      { id: 'f2l-case2', title: '3 move FL: L\' U\' L', moves: ['L\'', 'U', 'L'], setupAlg: 'L\' U\' L', stickering: 'F2L' },
+      { id: 'f2l-case3', title: '3 move BR: L\' U\' L', moves: ['R\'', 'U', 'R'], setupAlg: 'R\' U\' R', stickering: 'F2L' },
+      
+      { type: 'text', content: '<div class="tip"><p>These cases show how to pair up and insert corner-edge pairs in just 3 moves. They are the most efficient F2L cases and form the foundation for more advanced F2L solutions.</p></div>' },
+
+      { type: 'text', content: '<div class="tip"><p><strong>Note:</strong> These cases apply when the corner and edge have opposite colors facing up and the bottom color is pointing to the side.</p></div>' },
+
+      { id: 'f2l-case4', title: '3 move FR to Back: R U R\'', moves: ['R', 'U', 'R\''], setupAlg: 'R U\' R\'', stickering: 'F2L' },
+      { id: 'f2l-case5', title: '3 move FL to Back: L U L\'', moves: ['L\'', 'U\'', 'L'], setupAlg: 'L\' U L', stickering: 'F2L' },
+      { id: 'f2l-case6', title: '3 move BR to Front: R\' U\' R', moves: ['R\'', 'U\'', 'R'], setupAlg: 'R\' U R', stickering: 'F2L' },
+    
+   
+    ]
+  },
+
+  f2lCases: {
+    sectionClass: 'f2l-cases',
+    title: 'F2L Cases',
+    description: 'Solving the first two layers efficiently',
+    introText: 'F2L is the second step of CFOP method. It involves solving the corners and edges of the first two layers simultaneously.',
+    components: [
+      { type: 'text', content: '<div class="tip"><p>These are the easiest cases to solve. These are 3-move inserts.</p></div>' },
+    ]
   },
 };
 
