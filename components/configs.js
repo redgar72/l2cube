@@ -228,6 +228,13 @@ export const COMPONENT_CONFIGS = {
       { id: 'f2l-case5', title: '3 move FL to Back: L U L\'', moves: ['L\'', 'U\'', 'L'], setupAlg: 'L\' U L', stickering: 'F2L' },
       { id: 'f2l-case6', title: '3 move BR to Front: R\' U\' R', moves: ['R\'', 'U\'', 'R'], setupAlg: 'R\' U R', stickering: 'F2L' },
     
+      { type: 'text', content: '<div class="tip"><p>Here are three more cases where the corner and edge have the same color facing up. These show how to pair them before insertion.</p></div>' },
+      
+      { id: 'f2l-case7', title: 'Same Color Up FR: R U2 R\'', moves: ['R', 'U2', 'R\''], setupAlg: 'R U R\' U2 R U2 R\'', stickering: 'F2L' },
+      { id: 'f2l-case8', title: 'Same Color Up FL: L\' U2 L', moves: ['L\'', 'U2', 'L'], setupAlg: 'L\' U\' L U2 L\' U2 L', stickering: 'F2L' },
+      { id: 'f2l-case9', title: 'Same Color Up BR: R\' U2 R', moves: ['R\'', 'U2', 'R'], setupAlg: 'R\' U\' R U2 R\' U2 R', stickering: 'F2L' },
+      
+      { type: 'text', content: '<div class="tip"><p>Now that you know how to pair up the pieces, you can insert them using the 3-move inserts we learned earlier:</p><ul><li>For front slots: R U\' R\' or L\' U L</li><li>For back slots: R\' U R or L U\' L\'</li></ul><p>Practice combining the pairing with the insertion to develop muscle memory.</p></div>' }
    
     ]
   },
