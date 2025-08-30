@@ -4,6 +4,16 @@ import { CUBE_MASKS } from './constants.js';
 // Experimental stickering configurations
 const CROSS_STICKERING = "Cross";
 
+// Helper function to add stickering to components
+function addStickering(components, stickering) {
+  return components.map(component => {
+    if (component.type === 'text' || component.stickering) {
+      return component;
+    }
+    return { ...component, stickering };
+  });
+}
+
 export const COMPONENT_CONFIGS = {
   welcome: {
     sectionClass: 'welcome-section',
@@ -140,23 +150,23 @@ export const COMPONENT_CONFIGS = {
     title: 'Good Edges',
     description: 'Edges that can be inserted without rotating the cube',
     introText: 'Good edges are the foundation of efficient cross solving. These are edges that can be inserted with a single move without requiring cube rotations.',
-    components: [
+    components: addStickering([
       // Basic cross cases (good edges) - 3x2 grid
-      { id: 'basic-cross-right', title: 'One Move Insert: R', moves: ['R'], setupAlg: "R'", stickering: CROSS_STICKERING },
-      { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "R", stickering: CROSS_STICKERING },
-      { id: 'basic-cross-r2', title: 'One Move Insert: R2', moves: ['R2'], setupAlg: "R2", stickering: CROSS_STICKERING },
-      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "L'", stickering: CROSS_STICKERING },
-      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "L", stickering: CROSS_STICKERING },
-      { id: 'basic-cross-l2', title: 'One Move Insert: L2', moves: ['L2'], setupAlg: "L2", stickering: CROSS_STICKERING },
-      
+      { id: 'basic-cross-right', title: 'One Move Insert: R', moves: ['R'], setupAlg: "R'" },
+      { id: 'basic-cross-back', title: 'One Move Insert: R\'', moves: ['R\''], setupAlg: "R" },
+      { id: 'basic-cross-r2', title: 'One Move Insert: R2', moves: ['R2'], setupAlg: "R2" },
+      { id: 'basic-cross-front', title: 'One Move Insert: L', moves: ['L'], setupAlg: "L'" },
+      { id: 'basic-cross-left', title: 'One Move Insert: L\'', moves: ['L\''], setupAlg: "L" },
+      { id: 'basic-cross-l2', title: 'One Move Insert: L2', moves: ['L2'], setupAlg: "L2" },
+
       { type: 'text', content: '<div class="tip"><p><strong>Good Edges</strong> are edges that can be inserted without rotating the cube. These are the most efficient cases to learn first.</p></div>' },
-      
+
       // Top layer cases - white edge facing up but in wrong position
-      { id: 'top-edge-front', title: 'Edge in Front: U\' R2', moves: ['U\'', 'R2'], setupAlg: "R2 U", stickering: CROSS_STICKERING },
-      { id: 'top-edge-back', title: 'Edge in Back: U\' L2', moves: ['U\'', 'L2'], setupAlg: "L2 U", stickering: CROSS_STICKERING },
-      
+      { id: 'top-edge-front', title: 'Edge in Front: U\' R2', moves: ['U\'', 'R2'], setupAlg: "R2 U" },
+      { id: 'top-edge-back', title: 'Edge in Back: U\' L2', moves: ['U\'', 'L2'], setupAlg: "L2 U" },
+
       { type: 'text', content: '<div class="tip"><p>When the white edge is on top but in the wrong position, first move it to the correct side, then insert with R2 or L2.</p></div>' }
-    ]
+    ], CROSS_STICKERING)
   },
   
   badEdges: {
@@ -164,13 +174,14 @@ export const COMPONENT_CONFIGS = {
     title: 'Bad Edges',
     description: 'Edges that require cube rotations to insert',
     introText: 'Bad edges require cube rotations to insert efficiently. While not ideal, understanding these cases helps with overall cross planning.',
-    components: [
-      // Bad edge examples
-      { id: 'bad-edge-example1', title: 'Bad Edge Example 1', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], setupAlg: "", stickering: CROSS_STICKERING },
-      { id: 'bad-edge-example2', title: 'Bad Edge Example 2', moves: ['L\'', 'U\'', 'L', 'F\'', 'U\'', 'F'],  setupAlg: "", stickering: CROSS_STICKERING },
-      
+    components: addStickering([
+      // F insert case
+      { id: 'bad-edge-f-insert', title: 'F Insert: x F\' U\' F', moves: ['x', 'F\'', 'U\'', 'F'], setupAlg: "F U F' x'" },
+      // FR insert case
+      { id: 'bad-edge-fr-insert', title: 'FR Insert: y x R\' U R', moves: ['y', 'x', 'R\'', 'U', 'R'], setupAlg: "R U' R' x' y'" },
+
       { type: 'text', content: '<div class="tip"><p><strong>Bad Edges</strong> are edges that require rotating the cube to insert. These cases are less efficient but still important to understand.</p></div>' }
-    ]
+    ], CROSS_STICKERING)
   },
   
   daisy: {
@@ -178,13 +189,13 @@ export const COMPONENT_CONFIGS = {
     title: 'Daisy Method',
     description: 'Beginner-friendly approach to cross solving',
     introText: 'The daisy method is a beginner-friendly approach that creates a "daisy" pattern first, then converts it to a cross.',
-    components: [
+    components: addStickering([
       // Daisy method
-      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500, stickering: CROSS_STICKERING },
-      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000, stickering: CROSS_STICKERING },
-      
+      { id: 'daisy-step1', title: 'Daisy Pattern', moves: ['R', 'U', 'R\'', 'F', 'U', 'F\''], interval: 1500 },
+      { id: 'daisy-step2', title: 'Convert to Cross', moves: ['F2', 'R2', 'B2', 'L2'], interval: 2000 },
+
       { type: 'text', content: '<div class="tip"><p>The daisy method is great for beginners. First create the daisy pattern, then convert each edge to the cross using F2 moves.</p></div>' }
-    ]
+    ], CROSS_STICKERING)
   },
   
   crossAdvanced: {
@@ -192,19 +203,19 @@ export const COMPONENT_CONFIGS = {
     title: 'Advanced Cross',
     description: 'Advanced cross techniques and planning',
     introText: 'Advanced cross techniques include Cross + 1, X-Cross, and advanced planning methods.',
-    components: [
+    components: addStickering([
       // Cross + 1 cases
-      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z', stickering: CROSS_STICKERING },
-      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z', stickering: CROSS_STICKERING },
-      
+      { id: 'cross-plus-1-case1', title: 'Cross + 1 (UFR)', moves: ['R', 'U', 'R\'', 'U', 'R', 'U\'', 'R\''], interval: 1000, setupAlg: 'z' },
+      { id: 'cross-plus-1-case2', title: 'Cross + 1 (UFL)', moves: ['L\'', 'U\'', 'L', 'U\'', 'L\'', 'U', 'L'], interval: 1000, setupAlg: 'z' },
+
       // X-Cross example
-      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z', stickering: CROSS_STICKERING },
-      
+      { id: 'x-cross-example', title: 'X-Cross Example', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F', 'U', 'R', 'U\'', 'R\''], interval: 800, setupAlg: 'z' },
+
       // Planning example
-      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z', stickering: CROSS_STICKERING },
-      
+      { id: 'planning-example', title: 'Cross Planning', moves: ['R', 'U', 'R\'', 'F\'', 'U', 'F'], interval: 1200, setupAlg: 'z' },
+
       { type: 'text', content: '<div class="tip"><p>Advanced techniques like Cross + 1 and X-Cross can significantly improve your solve times.</p></div>' }
-    ]
+    ], CROSS_STICKERING)
   },
   
   f2l: {
@@ -234,8 +245,17 @@ export const COMPONENT_CONFIGS = {
       { id: 'f2l-case8', title: 'Same Color Up FL: L\' U2 L', moves: ['L\'', 'U2', 'L'], setupAlg: 'L\' U\' L U2 L\' U2 L', stickering: 'F2L' },
       { id: 'f2l-case9', title: 'Same Color Up BR: R\' U2 R', moves: ['R\'', 'U2', 'R'], setupAlg: 'R\' U\' R U2 R\' U2 R', stickering: 'F2L' },
       
-      { type: 'text', content: '<div class="tip"><p>Now that you know how to pair up the pieces, you can insert them using the 3-move inserts we learned earlier:</p><ul><li>For front slots: R U\' R\' or L\' U L</li><li>For back slots: R\' U R or L U\' L\'</li></ul><p>Practice combining the pairing with the insertion to develop muscle memory.</p></div>' }
-   
+      { type: 'text', content: '<div class="tip"><p>Now that you know how to pair up the pieces, you can insert them using the 3-move inserts we learned earlier:</p><ul><li>For front slots: R U\' R\' or L\' U L</li><li>For back slots: R\' U R or L U\' L\'</li></ul><p>Practice combining the pairing with the insertion to develop muscle memory.</p></div>' },
+
+      { type: 'text', content: '<div class="tip"><p><strong>Lift-and-pair</strong>: Use F/B triggers to raise both the corner and its edge from the bottom to U simultaneously, then pair on U and insert.</p><ul><li>Front slots: F U F\' or F\' U\' F</li><li>Back slots: B U B\' or B\' U\' B</li><li>Insert: front-right R U\' R\', front-left L\' U L, back-right R\' U R, back-left L U\' L\'</li></ul></div>' },
+
+      { id: 'f2l-case-lift-pair-fr-1', title: 'Lift & Pair FR: F\' U\' F → U R U\' R\'', moves: ["F'", "U'", "F", "U", "R", "U'", "R'"], setupAlg: "R U R' U' F' U F", interval: 1200, stickering: 'F2L' },
+      { id: 'f2l-case-lift-pair-fl-1', title: 'Lift & Pair FL: F U F\' → U\' L\' U L', moves: ["F", "U", "F'", "U'", "L'", "U", "L"], setupAlg: "L' U' L U F U' F'", interval: 1200, stickering: 'F2L' },
+      { id: 'f2l-case-lift-pair-fr-edge-slot', title: 'Lift & Pair FR (edge in slot, corner on U): F\' U\' F → U R U\' R\'', moves: ["F'", "U'", "F", "U", "R", "U'", "R'"], setupAlg: "R U R' U' F' U F", interval: 1200, stickering: 'F2L' },
+      { id: 'f2l-case-lift-pair-fl-edge-slot', title: 'Lift & Pair FL (edge in slot, corner on U): F U F\' → U\' L\' U L', moves: ["F", "U", "F'", "U'", "L'", "U", "L"], setupAlg: "L' U' L U F U' F'", interval: 1200, stickering: 'F2L' },
+      { id: 'f2l-case-lift-pair-bl-wide', title: 'Lift & Pair BL (wide): U\' f\' L f\' → U L U\' L\'', moves: ["U'", "f'", "L", "f'", "U", "L", "U'", "L'"], setupAlg: "L U L' U f U' f'", interval: 1200, stickering: 'F2L' },
+      { id: 'f2l-insert-bl', title: 'Insert Back-Left: U L U\' L\'', moves: ["U", "L", "U'", "L'"], setupAlg: "L U L' U'", interval: 1000, stickering: 'F2L' }
+
     ]
   },
 

@@ -1,5 +1,5 @@
 // Modal system for move definitions and demonstrations
-import { getMoveType, getMoveDefinition, captureCubeState, findSourceTwistyPlayer } from './moveUtils.js';
+import { getMoveType, getMoveDefinition, captureCubeState, findSourceTwistyPlayer, transformAlgByY, transformMovesByY } from './moveUtils.js';
 import { MOVE_COLORS } from './constants.js';
 
 // Function to show modal for move definitions
@@ -317,3 +317,110 @@ window.switchMoveVariant = function(button, move) {
     });
   }
 }; 
+
+// Modal for F2L case with orientation variants (FR base, plus BR/BL/FL via y-rotations)
+export function showF2LCaseModal(caseTitle, baseConfig, sourceCubeState = null) {
+  const { moves = [], setupAlg = 'x2', stickering = 'F2L', interval } = baseConfig || {};
+  // Determine base state
+  const initialSetup = sourceCubeState?.setupAlg || setupAlg || 'x2';
+  const initialMask = sourceCubeState?.mask || '';
+  const baseAlg = Array.isArray(moves) ? moves.join(' ') : (sourceCubeState?.currentAlg || '');
+
+  // Build variants by y rotations, transforming the setup/moves instead of appending y
+  const variants = [
+    { key: 'FR', label: 'FR', rotation: null, setup: initialSetup, execAlg: baseAlg, displayAlg: baseAlg },
+    { key: 'BR', label: 'BR', rotation: 'y', setup: transformAlgByY(initialSetup, 'y'), execAlg: transformAlgByY(baseAlg, 'y'), displayAlg: transformAlgByY(baseAlg, 'y') },
+    { key: 'BL', label: 'BL', rotation: 'y2', setup: transformAlgByY(initialSetup, 'y2'), execAlg: transformAlgByY(baseAlg, 'y2'), displayAlg: transformAlgByY(baseAlg, 'y2') },
+    { key: 'FL', label: 'FL', rotation: "y'", setup: transformAlgByY(initialSetup, "y'"), execAlg: transformAlgByY(baseAlg, "y'"), displayAlg: transformAlgByY(baseAlg, "y'") }
+  ];
+
+  // Create modal
+  const modalOverlay = document.createElement('div');
+  modalOverlay.className = 'modal-overlay';
+  modalOverlay.innerHTML = `
+    <div class="modal-content">
+      <div class="modal-header" style="display:flex;justify-content:space-between;align-items:center;">
+        <h3 style="margin:0;">${caseTitle} – Variants</h3>
+        <div style="display:flex;gap:8px;align-items:center;">
+          <button class="toggle-2d-btn" id="toggle-2d-btn">Hide 2D</button>
+          <button class="modal-close-btn" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow='';">×</button>
+        </div>
+      </div>
+      <div class="modal-body">
+        <div class="move-variants-tabs">
+          ${variants.map((v, i) => `<button class="move-variant-tab${i===0?' active':''}" data-idx="${i}">${v.label}</button>`).join('')}
+        </div>
+        <div class="move-definition-content side-by-side-cubes">
+          <div class="move-cube-demo">
+            <twisty-player class="cube-3d" id="f2l-variants-3d" control-panel="none" background="none" alg="${variants[0].execAlg}" experimental-setup-alg="${variants[0].setup}" ${stickering?`experimental-stickering="${stickering}"`:''} ${initialMask?`experimental-stickering-mask-orbits="${initialMask}"`:''}></twisty-player>
+          </div>
+          <div class="move-cube-demo move-cube-demo-2d">
+            <twisty-player class="cube-2d" id="f2l-variants-2d" visualization="2D" control-panel="none" background="none" alg="${variants[0].execAlg}" experimental-setup-alg="${variants[0].setup}" ${stickering?`experimental-stickering="${stickering}"`:''} ${initialMask?`experimental-stickering-mask-orbits="${initialMask}"`:''}></twisty-player>
+          </div>
+          <div class="move-description">
+            <h4>${caseTitle}</h4>
+            <p>Use the tabs to view the same case in different slots by y-rotating the cube.</p>
+            <div class="move-details"><div class="move-detail-item"><strong>Alg:</strong> <span id="f2l-variant-alg">${variants[0].displayAlg}</span></div></div>
+          </div>
+        </div>
+      </div>
+    </div>`;
+
+  document.body.appendChild(modalOverlay);
+
+  const toggle2dBtn = modalOverlay.querySelector('#toggle-2d-btn');
+  const cube3d = modalOverlay.querySelector('#f2l-variants-3d');
+  const cube2d = modalOverlay.querySelector('#f2l-variants-2d');
+  const algSpan = modalOverlay.querySelector('#f2l-variant-alg');
+  let is2DVisible = true;
+  toggle2dBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    is2DVisible = !is2DVisible;
+    if (is2DVisible) {
+      cube2d.style.display = '';
+      toggle2dBtn.textContent = 'Hide 2D';
+      toggle2dBtn.classList.remove('inactive');
+    } else {
+      cube2d.style.display = 'none';
+      toggle2dBtn.textContent = 'Show 2D';
+      toggle2dBtn.classList.add('inactive');
+    }
+  });
+
+  const tabs = modalOverlay.querySelectorAll('.move-variant-tab');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      tab.classList.add('active');
+      const idx = parseInt(tab.dataset.idx, 10);
+      const v = variants[idx];
+      // Update cubes preserving stickering/mask
+      cube3d.setAttribute('experimental-setup-alg', v.setup);
+      cube3d.setAttribute('alg', v.execAlg);
+      cube3d.play();
+      if (cube2d) {
+        cube2d.setAttribute('experimental-setup-alg', v.setup);
+        cube2d.setAttribute('alg', v.execAlg);
+        cube2d.play();
+      }
+      if (algSpan) algSpan.textContent = v.displayAlg;
+    });
+  });
+
+  // Close handlers
+  modalOverlay.addEventListener('click', (e) => {
+    if (e.target === modalOverlay) {
+      modalOverlay.remove();
+      document.body.style.overflow = '';
+    }
+  });
+  const handleKeydown = (e) => {
+    if (e.key === 'Escape') {
+      modalOverlay.remove();
+      document.body.style.overflow = '';
+      document.removeEventListener('keydown', handleKeydown);
+    }
+  };
+  document.addEventListener('keydown', handleKeydown);
+  document.body.style.overflow = 'hidden';
+}

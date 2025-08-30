@@ -101,3 +101,63 @@ export function findSourceTwistyPlayer(event) {
   console.log('No twisty-player found');
   return null;
 } 
+
+// Map a single face token under a y rotation
+function mapTokenUnderY(base) {
+  const map = {
+    'R': 'B', 'L': 'F', 'F': 'R', 'B': 'L',
+    'r': 'b', 'l': 'f', 'f': 'r', 'b': 'l'
+  };
+  return map[base] || base;
+}
+
+// Map a single face token under a y' rotation
+function mapTokenUnderYPrime(base) {
+  const map = {
+    'R': 'F', 'L': 'B', 'F': 'L', 'B': 'R',
+    'r': 'f', 'l': 'b', 'f': 'l', 'b': 'r'
+  };
+  return map[base] || base;
+}
+
+// Map a single face token under a y2 rotation
+function mapTokenUnderY2(base) {
+  const map = {
+    'R': 'L', 'L': 'R', 'F': 'B', 'B': 'F',
+    'r': 'l', 'l': 'r', 'f': 'b', 'b': 'f'
+  };
+  return map[base] || base;
+}
+
+// Transform a single move token like "R", "U'", "F2" under a given y-rotation
+function transformMoveTokenByY(token, rotation) {
+  if (!token) return token;
+  const match = token.match(/^([A-Za-z])([2']?)$/);
+  if (!match) return token; // Leave composite or unsupported tokens as-is
+  const base = match[1];
+  const suffix = match[2] || '';
+  let mapped = base;
+  if (rotation === 'y') {
+    mapped = mapTokenUnderY(base);
+  } else if (rotation === "y'") {
+    mapped = mapTokenUnderYPrime(base);
+  } else if (rotation === 'y2') {
+    mapped = mapTokenUnderY2(base);
+  }
+  return `${mapped}${suffix}`;
+}
+
+// Transform an algorithm string (space-separated) by a y-rotation
+export function transformAlgByY(alg, rotation) {
+  if (!alg) return alg;
+  return alg
+    .split(/\s+/)
+    .map(tok => transformMoveTokenByY(tok, rotation))
+    .join(' ');
+}
+
+// Transform an array of moves by a y-rotation
+export function transformMovesByY(moves, rotation) {
+  if (!Array.isArray(moves)) return moves;
+  return moves.map(tok => transformMoveTokenByY(tok, rotation));
+}

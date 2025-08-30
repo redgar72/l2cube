@@ -39,6 +39,11 @@ class CubeComponent {
             <span class="move-symbol">${this.options.moves[0] || ''}</span>
           </div>
         ` : ''}
+        ${this.options.stickering === 'F2L' ? `
+          <div class="controls" style="margin: 6px 0;">
+            <button class="variants-button" title="Show FR/BR/BL/FL variants">Variants</button>
+          </div>
+        ` : ''}
         <div class="cube-container">
           <twisty-player
             class="cube-3d"
@@ -74,6 +79,7 @@ class CubeComponent {
     this.moveSymbol = this.container.querySelector('.move-symbol');
     this.cube3D = this.container.querySelector('.cube-3d');
     this.cube2D = this.container.querySelector('.cube-2d');
+    this.variantsButton = this.container.querySelector('.variants-button');
   }
   
   setupEventListeners() {
@@ -117,6 +123,31 @@ class CubeComponent {
         window.showMoveDefinitionModal(move, type, sourceCubeState);
       }
     });
+
+    // Variants button for F2L cases
+    if (this.variantsButton) {
+      this.variantsButton.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const sourceTwistyPlayer = this.cube3D || this.cube2D;
+        const sourceCubeState = sourceTwistyPlayer ? {
+          setupAlg: sourceTwistyPlayer.getAttribute('experimental-setup-alg') || 'x2',
+          currentAlg: sourceTwistyPlayer.getAttribute('alg') || '',
+          mask: sourceTwistyPlayer.getAttribute('experimental-stickering-mask-orbits') || '',
+          visualization: sourceTwistyPlayer.getAttribute('visualization') || '3D'
+        } : null;
+
+        const baseConfig = {
+          moves: this.options.moves,
+          setupAlg: this.options.setupAlg,
+          stickering: this.options.stickering,
+          interval: this.options.interval
+        };
+        if (window.showF2LCaseModal) {
+          window.showF2LCaseModal(this.options.title, baseConfig, sourceCubeState);
+        }
+      });
+    }
   }
   
 

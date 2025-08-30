@@ -4,7 +4,7 @@ import { generateSectionHTML } from './templates.js';
 import { initializeNavigation, handleMainMoveClick, handleMainMoveModalClick } from './navigation.js';
 import { initializeMoveButtons } from './moveButtons.js';
 import { getMoveType, getMoveDefinition, captureCubeState, findSourceTwistyPlayer } from './moveUtils.js';
-import { showMoveDefinitionModal, showMainMoveModal } from './modalSystem.js';
+import { showMoveDefinitionModal, showMainMoveModal, showF2LCaseModal } from './modalSystem.js';
 
 // Helper function to create CubeComponent with default settings
 function createCubeComponent(containerId, options = {}) {
@@ -90,5 +90,6 @@ window.showMoveDefinitionModal = showMoveDefinitionModal;
 window.handleMainMoveClick = handleMainMoveClick;
 window.handleMainMoveModalClick = handleMainMoveModalClick;
 window.showMainMoveModal = showMainMoveModal;
+  window.showF2LCaseModal = showF2LCaseModal;
 window.captureCubeState = captureCubeState;
 window.findSourceTwistyPlayer = findSourceTwistyPlayer; 
