@@ -773,7 +773,8 @@ function initializeNavigation() {
     link.addEventListener('click', (e) => {
       e.preventDefault();
       const targetId = link.getAttribute('href').substring(1);
-      const targetSection = document.querySelector(`.${targetId}`);
+      // Try ID first, then class (for backward compatibility)
+      const targetSection = document.getElementById(targetId) || document.querySelector(`.${targetId}`);
       
       if (targetSection) {
         targetSection.scrollIntoView({ 
@@ -784,12 +785,24 @@ function initializeNavigation() {
         // Update active state
         navLinks.forEach(l => l.classList.remove('active'));
         link.classList.add('active');
+        
+        // If this is a section title link, also expand its submenu
+        if (link.classList.contains('nav-section-title')) {
+          const submenu = link.nextElementSibling;
+          if (submenu && submenu.classList.contains('nav-submenu')) {
+            submenu.classList.add('expanded');
+            link.classList.add('expanded');
+          }
+        }
       }
     });
   });
 
-  // Toggle submenu sections
+  // Toggle submenu sections (for non-link titles like "OLL", "Cross", etc.)
   navSectionTitles.forEach(title => {
+    // Skip if it's a link (those are handled above)
+    if (title.tagName === 'A') return;
+    
     title.addEventListener('click', () => {
       const submenu = title.nextElementSibling;
       submenu.classList.toggle('expanded');

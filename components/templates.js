@@ -35,6 +35,13 @@ export const TEMPLATES = {
     </div>
   `,
   
+  ollCase: (component) => `
+    <div class="cross-case-box oll-case-box">
+      <div class="cube-demo" id="${component.id}"></div>
+      ${component.probability ? `<div class="probability-tooltip" title="Probability: ${component.probability}">${component.probability}</div>` : ''}
+    </div>
+  `,
+  
   daisyStep: (component) => {
     const stepData = {
       'daisy-step1': {
@@ -400,6 +407,11 @@ const GROUP_CONFIGS = {
     wrapper: 'f2l-cases-grid',
     template: TEMPLATES.basicCross,
     patterns: ['f2l-case']
+  },
+  ollCases: {
+    wrapper: 'oll-cases-grid',
+    template: TEMPLATES.ollCase,
+    patterns: ['oll-']
   },
   daisySteps: {
     wrapper: 'technique-steps',

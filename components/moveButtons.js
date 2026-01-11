@@ -6,11 +6,21 @@ import { MOVE_COLORS } from './constants.js';
 // Utility function to convert move notation to clickable buttons
 export function initializeMoveButtons() {
   // Find all text content that might contain move notation
+  // Exclude elements inside cube-component to avoid processing algorithm text that's already been processed
   const textElements = document.querySelectorAll('p, li, h1, h2, h3, h4, h5, h6, div:not(.cube-component):not(.modal-overlay)');
   
   textElements.forEach(element => {
-    // Skip if already processed or has children
-    if (element.children.length > 0 || element.dataset.processed) return;
+    // Skip if inside a cube-component (these are handled by CubeComponent.processAlgorithmText)
+    // This check MUST come first before any other processing
+    if (element.closest('.cube-component') || element.closest('.oll-case-box') || element.closest('.cross-case-box')) {
+      return;
+    }
+    
+    // Skip if already processed, has children, or contains algorithm triggers/move buttons
+    if (element.children.length > 0 || 
+        element.dataset.processed || 
+        element.querySelector('.algorithm-trigger') ||
+        element.querySelector('.move-button')) return;
     
     let text = element.textContent;
     let hasChanges = false;
@@ -57,6 +67,11 @@ export function initializeMoveButtons() {
   
   // Add click handlers to move buttons
   document.addEventListener('click', (e) => {
+    // Skip if clicking on a trigger (triggers handle their own clicks)
+    if (e.target.closest('.algorithm-trigger')) {
+      return;
+    }
+    
     if (e.target.classList.contains('move-button')) {
       console.log('Move button clicked:', e.target.dataset.move);
       const move = e.target.dataset.move;

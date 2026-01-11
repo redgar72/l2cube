@@ -14,6 +14,70 @@ function addStickering(components, stickering) {
   });
 }
 
+// Helper function to parse algorithm string into array of moves
+// Handles: R U2 R' U' r u' f2 M' E S2 x y' z2
+// Note: U2' is normalized to U2 (180° turns don't have direction)
+function parseAlg(algString) {
+  if (!algString) return [];
+  // Remove parentheses (used for grouping/visualization only)
+  const cleaned = algString.replace(/[()]/g, '');
+  // Normalize U2' to U2 (same for other double moves)
+  const normalized = cleaned.replace(/([RUFLDBrufldbMESxyz]2)'/g, '$12');
+  // Split by spaces and filter empty strings
+  return normalized.split(/\s+/).filter(move => move.length > 0);
+}
+
+// Helper function to compute inverse of algorithm string
+// Inverse is computed by reversing the sequence and inverting each move
+function inverseAlg(algString) {
+  if (!algString) return '';
+  // Remove parentheses (used for grouping/visualization only)
+  const cleaned = algString.replace(/[()]/g, '');
+  // Normalize U2' to U2
+  const normalized = cleaned.replace(/([RUFLDBrufldbMESxyz]2)'/g, '$12');
+  // Split into moves
+  const moves = normalized.split(/\s+/).filter(move => move.length > 0);
+  // Reverse and invert each move
+  const inverted = moves.reverse().map(move => {
+    // Match move pattern: letter(s) followed by optional ' or 2
+    const match = move.match(/^([A-Za-z]+)(['2]?)$/);
+    if (!match) return move; // Return as-is if no match
+    
+    const base = match[1];
+    const suffix = match[2];
+    
+    // For double moves (2), they're self-inverse
+    if (suffix === '2') return move;
+    
+    // For prime moves ('), remove the prime
+    if (suffix === "'") return base;
+    
+    // For regular moves, add prime
+    return base + "'";
+  });
+  
+  return inverted.join(' ');
+}
+
+// Helper function to create OLL case with inverse setupAlg
+// Extracts probability from title (e.g., "OCLL6 - Probability = 1/54" -> title: "OCLL6", probability: "1/54")
+function createOllCase(id, titleWithProbability, algString, interval = 800) {
+  // Extract probability from title (format: "Name - Probability = X/Y")
+  const probabilityMatch = titleWithProbability.match(/\s*-\s*Probability\s*=\s*(.+)$/);
+  const probability = probabilityMatch ? probabilityMatch[1] : null;
+  const title = probabilityMatch ? titleWithProbability.replace(probabilityMatch[0], '').trim() : titleWithProbability;
+  
+  return {
+    id,
+    title,
+    probability,
+    algString, // Store the original algorithm string
+    moves: parseAlg(algString),
+    setupAlg: inverseAlg(algString),
+    interval
+  };
+}
+
 export const COMPONENT_CONFIGS = {
   welcome: {
     sectionClass: 'welcome-section',
@@ -266,6 +330,125 @@ export const COMPONENT_CONFIGS = {
     introText: 'F2L is the second step of CFOP method. It involves solving the corners and edges of the first two layers simultaneously.',
     components: [
       { type: 'text', content: '<div class="tip"><p>These are the easiest cases to solve. These are 3-move inserts.</p></div>' },
+    ]
+  },
+
+  oll: {
+    sectionClass: 'oll',
+    title: 'OLL (Orientation of Last Layer)',
+    description: 'Orienting all pieces of the last layer',
+    introText: 'OLL is the third step of CFOP method. It involves orienting all pieces of the last layer (making the top face all one color) using one of 57 algorithms. Algorithms are organized by pattern type.',
+    components: [
+      { type: 'text', content: '<div id="oll-all-edges" class="oll-major-section"><h3 class="oll-section-header">All Edges Oriented</h3></div>' },
+      { type: 'text', content: '<div id="oll-ocll-cases" class="oll-case-group"><div class="tip"><p><strong>OCLL Cases</strong> - These cases occur when all four edges are already oriented correctly. Only the corners need to be oriented.</p></div></div>' },
+      
+      // All Edges Oriented Correctly (OCLL cases)
+      createOllCase('oll-ocll6', 'OCLL6 - Probability = 1/54', "R U2 R' U' R U' R'"),
+      createOllCase('oll-ocll1', 'OCLL1 - Probability = 1/108', "(R U2 R') (U' R U R') (U' R U' R')"),
+      createOllCase('oll-ocll4', 'OCLL4 - Probability = 1/54', "(r U R' U') (r' F R F')"),
+      createOllCase('oll-ocll3', 'OCLL3 - Probability = 1/54', "R2 D (R' U2 R) D' (R' U2 R')"),
+      createOllCase('oll-ocll7', 'OCLL7 - Probability = 1/54', "R U R' U R U2' R'"),
+      createOllCase('oll-ocll2', 'OCLL2 - Probability = 1/54', "R U2' R2' U' R2 U' R2' U2' R"),
+      createOllCase('oll-ocll5', 'OCLL5 - Probability = 1/54', "y F' (r U R' U') r' F R"),
+
+      { type: 'text', content: '<div id="oll-t-shapes" class="oll-case-group"><div class="tip"><p><strong>T-Shapes</strong> - Named for the T pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // T-Shapes
+      createOllCase('oll-t1', 'T1 - Probability = 1/54', "(R U R' U') (R' F R F')"),
+      createOllCase('oll-t2', 'T2 - Probability = 1/54', "F (R U R' U') F'"),
+
+      { type: 'text', content: '<div id="oll-squares" class="oll-case-group"><div class="tip"><p><strong>Squares</strong> - Named for the square pattern of oriented pieces.</p></div></div>' },
+      
+      // Squares
+      createOllCase('oll-s1', 'S1 - Probability = 1/54', "(r' U2' R U R' U r)"),
+      createOllCase('oll-s2', 'S2 - Probability = 1/54', "(r U2 R' U' R U' r')"),
+
+      { type: 'text', content: '<div id="oll-c-shapes" class="oll-case-group"><div class="tip"><p><strong>C-Shapes</strong> - Named for the C pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // C-Shapes
+      createOllCase('oll-c1', 'C1 - Probability = 1/54', "(R U R2' U') (R' F R U) R U' F'"),
+      createOllCase('oll-c2', 'C2 - Probability = 1/54', "R' U' (R' F R F') U R"),
+
+      { type: 'text', content: '<div id="oll-w-shapes" class="oll-case-group"><div class="tip"><p><strong>W-Shapes</strong> - Named for the W pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // W-Shapes
+      createOllCase('oll-w1', 'W1 - Probability = 1/54', "(R' U' R U') (R' U R U) l U' R' U x"),
+      createOllCase('oll-w2', 'W2 - Probability = 1/54', "(R U R' U) (R U' R' U') (R' F R F')"),
+
+      { type: 'text', content: '<div id="oll-2-edges" class="oll-major-section"><h3 class="oll-section-header">2 Edges Oriented</h3></div>' },
+      { type: 'text', content: '<div id="oll-edges-flipped" class="oll-case-group"><div class="tip"><p><strong>Corners Correct, Edges Flipped</strong> - All corners are oriented correctly, but some edges need flipping.</p></div></div>' },
+      
+      // Corners Correct, Edges Flipped
+      createOllCase('oll-e1', 'E1 - Probability = 1/54', "(r U R' U') M (U R U' R')"),
+      createOllCase('oll-e2', 'E2 - Probability = 1/108', "(R U R' U') M' (U R U' r')"),
+
+      { type: 'text', content: '<div id="oll-p-shapes" class="oll-case-group"><div class="tip"><p><strong>P-Shapes</strong> - Named for the P pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // P-Shapes
+      createOllCase('oll-p1', 'P1 - Probability = 1/54', "(R' U' F) (U R U' R') F' R"),
+      createOllCase('oll-p2', 'P2 - Probability = 1/54', "R U B' (U' R' U) (R B R')"),
+      createOllCase('oll-p3', 'P3 - Probability = 1/54', "f' (L' U' L U) f"),
+      createOllCase('oll-p4', 'P4 - Probability = 1/54', "f (R U R' U') f'"),
+
+      { type: 'text', content: '<div id="oll-i-shapes" class="oll-case-group"><div class="tip"><p><strong>I-Shapes</strong> - Named for the I (line) pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // I-Shapes
+      createOllCase('oll-i1', 'I1 - Probability = 1/54', "f (R U R' U') (R U R' U') f'"),
+      createOllCase('oll-i2', 'I2 - Probability = 1/54', "(R' U' R U' R' U) y' (R' U R) B"),
+      createOllCase('oll-i3', 'I3 - Probability = 1/108', "y (R' F R U) (R U' R2' F') R2 U' R' (U R U R')"),
+      createOllCase('oll-i4', 'I4 - Probability = 1/108', "r' U' r (U' R' U R) (U' R' U R) r' U r"),
+
+      { type: 'text', content: '<div id="oll-fish-shapes" class="oll-case-group"><div class="tip"><p><strong>Fish Shapes</strong> - Named for the fish-like pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // Fish Shapes
+      createOllCase('oll-f1', 'F1 - Probability = 1/54', "(R U R' U') R' F (R2 U R' U') F'"),
+      createOllCase('oll-f2', 'F2 - Probability = 1/54', "(R U R' U) (R' F R F') (R U2' R')"),
+      createOllCase('oll-f3', 'F3 - Probability = 1/54', "(R U2') (R2' F R F') (R U2' R')"),
+      createOllCase('oll-f4', 'F4 - Probability = 1/54', "F (R U' R' U') (R U R' F')"),
+
+      { type: 'text', content: '<div id="oll-knight-shapes" class="oll-case-group"><div class="tip"><p><strong>Knight Move Shapes</strong> - Named for the knight move pattern (L-shape) formed by the oriented pieces.</p></div></div>' },
+      
+      // Knight Move Shapes
+      createOllCase('oll-k1', 'K1 - Probability = 1/54', "(r U' r') (U' r U r') y' (R' U R)"),
+      createOllCase('oll-k2', 'K2 - Probability = 1/54', "(R' F R) (U R' F' R) (F U' F')"),
+      createOllCase('oll-k3', 'K3 - Probability = 1/54', "(r' U' r) (R' U' R U) (r' U r)"),
+      createOllCase('oll-k4', 'K4 - Probability = 1/54', "(r U r') (R U R' U') (r U' r')"),
+
+      { type: 'text', content: '<div id="oll-awkward-shapes" class="oll-case-group"><div class="tip"><p><strong>Awkward Shapes</strong> - Cases that don\'t fit into other categories well.</p></div></div>' },
+      
+      // Awkward Shapes
+      createOllCase('oll-a1', 'A1 - Probability = 1/54', "y (R U R' U') (R U' R') (F' U' F) (R U R')"),
+      createOllCase('oll-a2', 'A2 - Probability = 1/54', "(R U R' U R U2' R') F (R U R' U') F'"),
+      createOllCase('oll-a3', 'A3 - Probability = 1/54', "y' F U (R U2 R' U') (R U2 R' U') F'"),
+      createOllCase('oll-a4', 'A4 - Probability = 1/54', "(R' U' R U' R' U2 R) F (R U R' U') F'"),
+
+      { type: 'text', content: '<div id="oll-l-shapes" class="oll-case-group"><div class="tip"><p><strong>L-Shapes</strong> - Named for the L pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // L-Shapes
+      createOllCase('oll-l2', 'L2 - Probability = 1/54', "F (R U R' U') (R U R' U') F'"),
+      createOllCase('oll-l3', 'L3 - Probability = 1/54', "r U' r2' U r2 U r2' U' r"),
+      createOllCase('oll-l4', 'L4 - Probability = 1/54', "r' U r2 U' r2' U' r2 U r'"),
+      createOllCase('oll-l5', 'L5 - Probability = 1/54', "(r' U' R U') (R' U R U') R' U2 r"),
+      createOllCase('oll-l6', 'L6 - Probability = 1/54', "(r U R' U) (R U' R' U) R U2' r'"),
+
+      { type: 'text', content: '<div id="oll-lightning-bolts" class="oll-case-group"><div class="tip"><p><strong>Lightning Bolts</strong> - Named for the lightning bolt pattern formed by the oriented pieces.</p></div></div>' },
+      
+      // Lightning Bolts
+      createOllCase('oll-b1', 'B1 - Probability = 1/54', "(r U R' U R U2' r')"),
+      createOllCase('oll-b2', 'B2 - Probability = 1/54', "(r' U' R U' R' U2 r)"),
+      createOllCase('oll-b3', 'B3 - Probability = 1/54', "r' (R2 U R' U R U2 R') U M'"),
+      createOllCase('oll-b4', 'B4 - Probability = 1/54', "M' (R' U' R U' R' U2 R) U' M"),
+      createOllCase('oll-b5', 'B5 - Probability = 1/54', "(L F') (L' U' L U) F U' L'"),
+      createOllCase('oll-b6', 'B6 - Probability = 1/54', "(R' F) (R U R' U') F' U R"),
+
+      { type: 'text', content: '<div id="oll-no-edges" class="oll-major-section"><h3 class="oll-section-header">No Edges Oriented</h3></div>' },
+      { type: 'text', content: '<div id="oll-no-edges-flipped" class="oll-case-group"><div class="tip"><p><strong>No Edges Flipped Correctly</strong> - Cases where no edges are oriented correctly.</p></div></div>' },
+      
+      // No Edges Flipped Correctly
+      createOllCase('oll-o1', 'O1 - Probability = 1/108', "(R U2') (R2' F R F') U2' (R' F R F')"),
+      createOllCase('oll-o3', 'O3 - Probability = 1/54', "f (R U R' U') f' U' F (R U R' U') F'"),
+      createOllCase('oll-o5', 'O5 - Probability = 1/54', "(R U R' U) (R' F R F') U2' (R' F R F')"),
+      createOllCase('oll-o6', 'O6 - Probability = 1/54', "(r U R' U R U2 r') (r' U' R U' R' U2 r)"),
     ]
   },
 };
